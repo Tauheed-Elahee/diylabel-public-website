@@ -119,7 +119,7 @@ export default function Hero() {
         <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl">
             <div className="mb-4">
-              <h3 className="text-xl font-semibold text-white mb-2">Find Local Print Shops</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">Your Merch Made Here...</h3>
               <p className="text-gray-200 text-sm">Discover verified partners near you</p>
             </div>
 
