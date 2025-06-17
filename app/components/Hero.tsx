@@ -108,33 +108,6 @@ export default function Hero() {
               Learn More
             </button>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-                <Store className="w-8 h-8 text-accent-300 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-2">500+</div>
-                <div className="text-gray-200">Shopify Stores</div>
-              </div>
-            </div>
-            
-            <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-                <Printer className="w-8 h-8 text-accent-300 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-2">200+</div>
-                <div className="text-gray-200">Local Print Shops</div>
-              </div>
-            </div>
-            
-            <div className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-                <MapPin className="w-8 h-8 text-accent-300 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-2">50+</div>
-                <div className="text-gray-200">Cities Covered</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 

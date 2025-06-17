@@ -1,6 +1,6 @@
 'use client'
 
-import { Leaf, MapPin, Zap, Users, Shield, TrendingUp } from 'lucide-react'
+import { Leaf, MapPin, Zap, Users, Shield, TrendingUp, Store, Printer } from 'lucide-react'
 
 const features = [
   {
@@ -53,6 +53,33 @@ export default function Features() {
             We're revolutionizing the merch industry by connecting local print shops with global creators, 
             creating a sustainable ecosystem that benefits everyone.
           </p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
+          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+              <Store className="w-8 h-8 text-primary-600 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">500+</div>
+              <div className="text-gray-600 dark:text-gray-300">Shopify Stores</div>
+            </div>
+          </div>
+          
+          <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+              <Printer className="w-8 h-8 text-primary-600 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">200+</div>
+              <div className="text-gray-600 dark:text-gray-300">Local Print Shops</div>
+            </div>
+          </div>
+          
+          <div className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+              <MapPin className="w-8 h-8 text-primary-600 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">50+</div>
+              <div className="text-gray-600 dark:text-gray-300">Cities Covered</div>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
