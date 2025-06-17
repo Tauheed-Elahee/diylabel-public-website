@@ -61,6 +61,15 @@ export default function Hero() {
     }
   }, [])
 
+  // Function to get the display text for the headline
+  const getHeadlineText = () => {
+    if (userCity === 'Here') {
+      return 'Made Here'
+    } else {
+      return `Made in ${userCity}`
+    }
+  }
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
@@ -72,7 +81,7 @@ export default function Hero() {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             Your Merch,
             <br />
-            <span className="text-accent-300">Made {userCity}</span>
+            <span className="text-accent-300">{getHeadlineText()}</span>
           </h1>
           
           {/* Map Container replacing the paragraph */}
