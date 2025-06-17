@@ -1,8 +1,25 @@
 'use client'
 
-import { ArrowRight, MapPin, Store, Printer } from 'lucide-react'
+import { ArrowRight, MapPin, Store, Printer, Loader } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { useTheme } from 'next-themes'
+
+// Mock data for print shops
+const mockPrintShops = [
+  { id: 1, name: 'Local Print Co.', lat: 40.7128, lng: -74.0060, address: '123 Main St, New York, NY' },
+  { id: 2, name: 'Quick Print Solutions', lat: 40.7589, lng: -73.9851, address: '456 Broadway, New York, NY' },
+  { id: 3, name: 'Eco Print Shop', lat: 40.6892, lng: -74.0445, address: '789 Green Ave, Brooklyn, NY' },
+  { id: 4, name: 'Creative Prints', lat: 40.7831, lng: -73.9712, address: '321 Art St, Manhattan, NY' },
+  { id: 5, name: 'Neighborhood Printing', lat: 40.6782, lng: -73.9442, address: '654 Local Rd, Queens, NY' },
+]
 
 export default function Hero() {
+  const [lng, setLng] = useState(-74.0060)
+  const [lat, setLat] = useState(40.7128)
+  const [loading, setLoading] = useState(true)
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
+  const { theme } = useTheme()
+
   const scrollToFeatures = () => {
     const featuresSection = document.getElementById('features')
     if (featuresSection) {
@@ -13,26 +30,50 @@ export default function Hero() {
     }
   }
 
+  // Get user's location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude
+          const userLng = position.coords.longitude
+          setLat(userLat)
+          setLng(userLng)
+          setUserLocation({ lat: userLat, lng: userLng })
+        },
+        (error) => {
+          console.log('Geolocation error:', error)
+          // Fallback to NYC coordinates
+        }
+      )
+    }
+    
+    // Simulate map loading
+    setTimeout(() => setLoading(false), 1500)
+  }, [])
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 gradient-bg hero-pattern"></div>
       
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+      {/* Content Grid */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
+        
+        {/* Left Column - Text Content */}
+        <div className="animate-fade-in text-center lg:text-left">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             Local Print,
             <br />
             <span className="text-accent-300">Global Reach</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
             Connect creators, local print shops, and Shopify store owners in a sustainable merch ecosystem. 
             Empower independent design and reduce textile waste.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-8">
             <button className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
               Get Started
               <ArrowRight size={20} />
@@ -47,28 +88,91 @@ export default function Hero() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-                <Store className="w-8 h-8 text-accent-300 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-2">500+</div>
-                <div className="text-gray-200">Shopify Stores</div>
+          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+            <div className="animate-slide-up text-center" style={{ animationDelay: '0.2s' }}>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                <Store className="w-6 h-6 text-accent-300 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">500+</div>
+                <div className="text-xs text-gray-200">Stores</div>
               </div>
             </div>
             
-            <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-                <Printer className="w-8 h-8 text-accent-300 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-2">200+</div>
-                <div className="text-gray-200">Local Print Shops</div>
+            <div className="animate-slide-up text-center" style={{ animationDelay: '0.4s' }}>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                <Printer className="w-6 h-6 text-accent-300 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">200+</div>
+                <div className="text-xs text-gray-200">Print Shops</div>
               </div>
             </div>
             
-            <div className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-                <MapPin className="w-8 h-8 text-accent-300 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-2">50+</div>
-                <div className="text-gray-200">Cities Covered</div>
+            <div className="animate-slide-up text-center" style={{ animationDelay: '0.6s' }}>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                <MapPin className="w-6 h-6 text-accent-300 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">50+</div>
+                <div className="text-xs text-gray-200">Cities</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Interactive Map */}
+        <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl">
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold text-white mb-2">Find Local Print Shops</h3>
+              <p className="text-gray-200 text-sm">Discover verified partners near you</p>
+            </div>
+
+            {/* Map Container */}
+            <div className="relative h-80 rounded-xl overflow-hidden">
+              {loading ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100/20 backdrop-blur-sm">
+                  <div className="text-center">
+                    <Loader className="w-8 h-8 animate-spin text-accent-300 mx-auto mb-4" />
+                    <p className="text-white text-sm">Loading map...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-blue-100/20 to-blue-200/20 backdrop-blur-sm relative rounded-xl border border-white/10">
+                  {/* Mock Map Interface */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center p-6">
+                      <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3" />
+                      <h4 className="text-lg font-semibold text-white mb-2">
+                        Interactive Map
+                      </h4>
+                      <p className="text-gray-200 text-sm mb-3">
+                        Live map showing nearby print shops
+                      </p>
+                      <div className="text-xs text-gray-300">
+                        Location: {userLocation ? `${userLocation.lat.toFixed(2)}, ${userLocation.lng.toFixed(2)}` : 'New York, NY'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mock markers */}
+                  <div className="absolute top-3 left-3 bg-white/20 backdrop-blur-sm rounded-lg p-2 border border-white/20">
+                    <div className="text-xs font-medium text-white">Print Shops</div>
+                    <div className="text-lg font-bold text-accent-300">{mockPrintShops.length}</div>
+                  </div>
+
+                  {/* Mock location dots */}
+                  <div className="absolute top-1/4 left-1/3 w-3 h-3 bg-accent-400 rounded-full animate-pulse shadow-lg"></div>
+                  <div className="absolute top-1/2 right-1/3 w-3 h-3 bg-accent-400 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '0.5s' }}></div>
+                  <div className="absolute bottom-1/3 left-1/2 w-3 h-3 bg-accent-400 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '1s' }}></div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Stats */}
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                <div className="text-sm text-gray-200">Avg. Delivery</div>
+                <div className="text-lg font-bold text-white">2-3 days</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                <div className="text-sm text-gray-200">CO₂ Saved</div>
+                <div className="text-lg font-bold text-accent-300">40%</div>
               </div>
             </div>
           </div>
