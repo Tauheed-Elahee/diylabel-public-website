@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 
 export default function Hero() {
   const [selectedShop, setSelectedShop] = useState<any>(null)
-  const [userCity, setUserCity] = useState<string>('New York, NY')
+  const [userCity, setUserCity] = useState<string>('New York')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   
   // Mock data for print shops
@@ -23,18 +23,19 @@ export default function Hero() {
       )
       const data = await response.json()
       
-      if (data.city && data.principalSubdivision) {
-        return `${data.city}, ${data.principalSubdivision}`
-      } else if (data.locality && data.principalSubdivision) {
-        return `${data.locality}, ${data.principalSubdivision}`
-      } else if (data.principalSubdivision && data.countryName) {
-        return `${data.principalSubdivision}, ${data.countryName}`
+      // Return just the city name for the "Made in" text
+      if (data.city) {
+        return data.city
+      } else if (data.locality) {
+        return data.locality
+      } else if (data.principalSubdivision) {
+        return data.principalSubdivision
       } else {
-        return 'Unknown Location'
+        return 'Your City'
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error)
-      return 'Location unavailable'
+      return 'Your City'
     }
   }
 
@@ -53,8 +54,8 @@ export default function Hero() {
         },
         (error) => {
           console.log('Geolocation error:', error)
-          // Fallback to NYC coordinates and city
-          setUserCity('New York, NY')
+          // Fallback to default city
+          setUserCity('New York')
         }
       )
     }
@@ -71,7 +72,7 @@ export default function Hero() {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             Your Merch,
             <br />
-            <span className="text-accent-300">Made Here</span>
+            <span className="text-accent-300">Made in {userCity}</span>
           </h1>
           
           {/* Map Container replacing the paragraph */}
