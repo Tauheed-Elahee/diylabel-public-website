@@ -1,10 +1,12 @@
 'use client'
 
 import { ArrowRight, MapPin, Store, Printer } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function Hero() {
   const [selectedShop, setSelectedShop] = useState<any>(null)
+  const [userCity, setUserCity] = useState<string>('New York, NY')
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   
   // Mock data for print shops
   const mockPrintShops = [
@@ -12,6 +14,51 @@ export default function Hero() {
     { id: 2, name: 'Quick Print Solutions', lat: 40.7589, lng: -73.9851, address: '456 Broadway, New York, NY', specialty: 'Business Cards & Flyers', rating: 4.9 },
     { id: 3, name: 'Eco Print Shop', lat: 40.6892, lng: -74.0445, address: '789 Green Ave, Brooklyn, NY', specialty: 'Sustainable Materials', rating: 4.7 },
   ]
+
+  // Reverse geocoding function to get city from coordinates
+  const getCityFromCoordinates = async (latitude: number, longitude: number) => {
+    try {
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+      )
+      const data = await response.json()
+      
+      if (data.city && data.principalSubdivision) {
+        return `${data.city}, ${data.principalSubdivision}`
+      } else if (data.locality && data.principalSubdivision) {
+        return `${data.locality}, ${data.principalSubdivision}`
+      } else if (data.principalSubdivision && data.countryName) {
+        return `${data.principalSubdivision}, ${data.countryName}`
+      } else {
+        return 'Unknown Location'
+      }
+    } catch (error) {
+      console.error('Reverse geocoding error:', error)
+      return 'Location unavailable'
+    }
+  }
+
+  // Get user's location and city
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const userLat = position.coords.latitude
+          const userLng = position.coords.longitude
+          setUserLocation({ lat: userLat, lng: userLng })
+          
+          // Get city name from coordinates
+          const cityName = await getCityFromCoordinates(userLat, userLng)
+          setUserCity(cityName)
+        },
+        (error) => {
+          console.log('Geolocation error:', error)
+          // Fallback to NYC coordinates and city
+          setUserCity('New York, NY')
+        }
+      )
+    }
+  }, [])
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -44,7 +91,14 @@ export default function Hero() {
                       custom markers, and interactive popups for each print shop.
                     </p>
                     <div className="text-xs text-gray-300">
-                      Location: 45.5088, -73.6972
+                      <div className="mb-1">
+                        <strong>Your Location:</strong> {userCity}
+                      </div>
+                      {userLocation && (
+                        <div>
+                          Coordinates: {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -53,7 +107,7 @@ export default function Hero() {
                 <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                   <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
                   <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
-                  <div className="text-xs text-gray-300">All shops in area</div>
+                  <div className="text-xs text-gray-300">Near {userCity}</div>
                 </div>
 
                 {/* Map controls */}

@@ -22,24 +22,53 @@ export default function InteractiveMap() {
   const [zoom, setZoom] = useState(11)
   const [loading, setLoading] = useState(true)
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
+  const [userCity, setUserCity] = useState<string>('New York, NY')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<any>(null)
   const { theme } = useTheme()
+
+  // Reverse geocoding function to get city from coordinates
+  const getCityFromCoordinates = async (latitude: number, longitude: number) => {
+    try {
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+      )
+      const data = await response.json()
+      
+      if (data.city && data.principalSubdivision) {
+        return `${data.city}, ${data.principalSubdivision}`
+      } else if (data.locality && data.principalSubdivision) {
+        return `${data.locality}, ${data.principalSubdivision}`
+      } else if (data.principalSubdivision && data.countryName) {
+        return `${data.principalSubdivision}, ${data.countryName}`
+      } else {
+        return 'Unknown Location'
+      }
+    } catch (error) {
+      console.error('Reverse geocoding error:', error)
+      return 'Location unavailable'
+    }
+  }
 
   // Get user's location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const userLat = position.coords.latitude
           const userLng = position.coords.longitude
           setLat(userLat)
           setLng(userLng)
           setUserLocation({ lat: userLat, lng: userLng })
+          
+          // Get city name from coordinates
+          const cityName = await getCityFromCoordinates(userLat, userLng)
+          setUserCity(cityName)
         },
         (error) => {
           console.log('Geolocation error:', error)
-          // Fallback to NYC coordinates
+          // Fallback to NYC coordinates and city
+          setUserCity('New York, NY')
         }
       )
     }
@@ -122,7 +151,14 @@ export default function InteractiveMap() {
                       custom markers, and interactive popups for each print shop.
                     </p>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      Location: {userLocation ? `${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}` : 'New York, NY'}
+                      <div className="mb-1">
+                        <strong>Your Location:</strong> {userCity}
+                      </div>
+                      {userLocation && (
+                        <div className="text-xs">
+                          Coordinates: {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -131,8 +167,11 @@ export default function InteractiveMap() {
                 <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg max-w-xs">
                   <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Print Shops Found</div>
                   <div className="text-2xl font-bold text-primary-600 mb-2">{filteredShops.length}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     {searchTerm ? `Filtered by "${searchTerm}"` : 'All shops in area'}
+                  </div>
+                  <div className="text-xs text-primary-600 dark:text-primary-400">
+                    Near {userCity}
                   </div>
                 </div>
 
@@ -153,7 +192,7 @@ export default function InteractiveMap() {
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {searchTerm ? `Search Results (${filteredShops.length})` : 'All Print Shops'}
+                {searchTerm ? `Search Results (${filteredShops.length})` : `Print Shops in ${userCity}`}
               </h3>
               <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
                 <option>Sort by Distance</option>
