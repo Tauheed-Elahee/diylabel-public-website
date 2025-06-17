@@ -68,10 +68,66 @@ export default function Hero() {
             <span className="text-accent-300">Global Reach</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
-            Connect creators, local print shops, and Shopify store owners in a sustainable merch ecosystem. 
-            Empower independent design and reduce textile waste.
-          </p>
+          {/* Interactive Map Widget */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl mb-8">
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold text-white mb-2">Your Merch Made Here...</h3>
+              <p className="text-gray-200 text-sm">Discover verified partners near you</p>
+            </div>
+
+            {/* Map Container */}
+            <div className="relative h-64 rounded-xl overflow-hidden">
+              {loading ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100/20 backdrop-blur-sm">
+                  <div className="text-center">
+                    <Loader className="w-8 h-8 animate-spin text-accent-300 mx-auto mb-4" />
+                    <p className="text-white text-sm">Loading map...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-blue-100/20 to-blue-200/20 backdrop-blur-sm relative rounded-xl border border-white/10">
+                  {/* Mock Map Interface */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center p-4">
+                      <MapPin className="w-10 h-10 text-accent-300 mx-auto mb-2" />
+                      <h4 className="text-base font-semibold text-white mb-1">
+                        Interactive Map
+                      </h4>
+                      <p className="text-gray-200 text-xs mb-2">
+                        Live map showing nearby print shops
+                      </p>
+                      <div className="text-xs text-gray-300">
+                        Location: {userLocation ? `${userLocation.lat.toFixed(2)}, ${userLocation.lng.toFixed(2)}` : '45.51, -73.70'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mock markers */}
+                  <div className="absolute top-3 left-3 bg-white/20 backdrop-blur-sm rounded-lg p-2 border border-white/20">
+                    <div className="text-xs font-medium text-white">Print Shops</div>
+                    <div className="text-lg font-bold text-accent-300">{mockPrintShops.length}</div>
+                  </div>
+
+                  {/* Mock location dots */}
+                  <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-accent-400 rounded-full animate-pulse shadow-lg"></div>
+                  <div className="absolute top-1/2 right-1/3 w-2 h-2 bg-accent-400 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '0.5s' }}></div>
+                  <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-accent-400 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '1s' }}></div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Stats */}
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                <div className="text-sm text-gray-200">Avg. Delivery</div>
+                <div className="text-lg font-bold text-white">2-3 days</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                <div className="text-sm text-gray-200">CO₂ Saved</div>
+                <div className="text-lg font-bold text-accent-300">40%</div>
+              </div>
+            </div>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-8">
             <button className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
@@ -115,67 +171,9 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right Column - Interactive Map */}
-        <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl">
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold text-white mb-2">Your Merch Made Here...</h3>
-              <p className="text-gray-200 text-sm">Discover verified partners near you</p>
-            </div>
-
-            {/* Map Container */}
-            <div className="relative h-80 rounded-xl overflow-hidden">
-              {loading ? (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100/20 backdrop-blur-sm">
-                  <div className="text-center">
-                    <Loader className="w-8 h-8 animate-spin text-accent-300 mx-auto mb-4" />
-                    <p className="text-white text-sm">Loading map...</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-100/20 to-blue-200/20 backdrop-blur-sm relative rounded-xl border border-white/10">
-                  {/* Mock Map Interface */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center p-6">
-                      <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3" />
-                      <h4 className="text-lg font-semibold text-white mb-2">
-                        Interactive Map
-                      </h4>
-                      <p className="text-gray-200 text-sm mb-3">
-                        Live map showing nearby print shops
-                      </p>
-                      <div className="text-xs text-gray-300">
-                        Location: {userLocation ? `${userLocation.lat.toFixed(2)}, ${userLocation.lng.toFixed(2)}` : 'New York, NY'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Mock markers */}
-                  <div className="absolute top-3 left-3 bg-white/20 backdrop-blur-sm rounded-lg p-2 border border-white/20">
-                    <div className="text-xs font-medium text-white">Print Shops</div>
-                    <div className="text-lg font-bold text-accent-300">{mockPrintShops.length}</div>
-                  </div>
-
-                  {/* Mock location dots */}
-                  <div className="absolute top-1/4 left-1/3 w-3 h-3 bg-accent-400 rounded-full animate-pulse shadow-lg"></div>
-                  <div className="absolute top-1/2 right-1/3 w-3 h-3 bg-accent-400 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '0.5s' }}></div>
-                  <div className="absolute bottom-1/3 left-1/2 w-3 h-3 bg-accent-400 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '1s' }}></div>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Stats */}
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                <div className="text-sm text-gray-200">Avg. Delivery</div>
-                <div className="text-lg font-bold text-white">2-3 days</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                <div className="text-sm text-gray-200">CO₂ Saved</div>
-                <div className="text-lg font-bold text-accent-300">40%</div>
-              </div>
-            </div>
-          </div>
+        {/* Right Column - Spacer or additional content */}
+        <div className="hidden lg:block">
+          {/* This space can be used for additional content or left empty for better balance */}
         </div>
       </div>
 
