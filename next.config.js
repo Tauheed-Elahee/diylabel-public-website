@@ -1,10 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable SWC and use Babel instead for WebContainer compatibility
-  swcMinify: false,
-  compiler: {
-    // Disable SWC compiler features
-    removeConsole: false,
+  experimental: {
+    appDir: true,
   },
   images: {
     domains: ['images.pexels.com'],
