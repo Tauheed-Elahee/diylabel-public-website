@@ -17,19 +17,10 @@ export default function Hero() {
             <span className="text-accent-300">Global Reach</span>
           </h1>
           
-          <div className="text-center p-8">
-            <MapPin className="w-16 h-16 text-primary-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Full Interactive Map
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              In production, this would show a detailed Mapbox GL JS map with clustering, 
-              custom markers, and interactive popups for each print shop.
-            </p>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Location: 45.5088, -73.6972
-            </div>
-          </div>
+          <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Connect creators, local print shops, and Shopify store owners in a sustainable merch ecosystem. 
+            Empower independent design and reduce textile waste.
+          </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <button className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
