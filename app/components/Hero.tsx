@@ -57,11 +57,11 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute inset-0 gradient-bg hero-pattern"></div>
       
-      {/* Content Grid */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
+      {/* Content - Full Width */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center min-h-screen py-20">
         
-        {/* Left Column - Text Content */}
-        <div className="animate-fade-in text-center lg:text-left">
+        {/* Content - Full Width */}
+        <div className="animate-fade-in text-center lg:text-left w-full">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             Local Print,
             <br />
@@ -169,11 +169,6 @@ export default function Hero() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Right Column - Spacer or additional content */}
-        <div className="hidden lg:block">
-          {/* This space can be used for additional content or left empty for better balance */}
         </div>
       </div>
 
