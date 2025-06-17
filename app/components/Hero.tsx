@@ -21,10 +21,8 @@ export default function Hero() {
       {/* Content */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 text-center">
         <div className="animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            Local Print,
-            <br />
-            <span className="text-accent-300">Global Reach</span>
+          <h1 className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight">
+            Local Print, <span className="text-accent-300">Global Reach</span>
           </h1>
           
           {/* Map Container replacing the paragraph */}
