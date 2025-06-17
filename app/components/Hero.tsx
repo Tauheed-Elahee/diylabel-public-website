@@ -22,9 +22,9 @@ export default function Hero() {
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 text-center">
         <div className="animate-fade-in">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            Local Print,
+            Your Merch,
             <br />
-            <span className="text-accent-300">Global Reach</span>
+            <span className="text-accent-300">Made Here</span>
           </h1>
           
           {/* Map Container replacing the paragraph */}
