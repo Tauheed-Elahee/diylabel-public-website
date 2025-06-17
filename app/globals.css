@@ -63,6 +63,14 @@ a {
   @apply text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200;
 }
 
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.dark .gradient-bg {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+}
+
 .hero-pattern {
   background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
   background-size: 20px 20px;

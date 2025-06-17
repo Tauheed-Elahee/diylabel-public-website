@@ -62,36 +62,36 @@ export default function Hero() {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 hero-pattern opacity-30"></div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 gradient-bg hero-pattern"></div>
       
       {/* Content */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 text-center">
         <div className="animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             Your Merch,
             <br />
             <span className="text-accent-300">Made {userCity}</span>
           </h1>
           
           {/* Map Container replacing the paragraph */}
-          <div className="bg-white/30 dark:bg-white/5 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto border border-white/40 dark:border-white/10">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto border border-white/20">
             {/* Map Container */}
             <div className="relative h-64 md:h-80">
-              <div className="w-full h-full bg-gradient-to-br from-blue-900/70 to-purple-900/70 dark:from-gray-900/80 dark:to-black/80 relative">
+              <div className="w-full h-full bg-gradient-to-br from-blue-900/50 to-purple-900/50 relative">
                 {/* Enhanced Mock Map Interface */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center p-6">
-                    <MapPin className="w-12 h-12 text-accent-300 dark:text-accent-400 mx-auto mb-3" />
-                    <h3 className="text-lg font-semibold text-gray-100 dark:text-white mb-2">
+                    <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-white mb-2">
                       Full Interactive Map
                     </h3>
-                    <p className="text-gray-200 dark:text-gray-300 text-sm mb-3">
+                    <p className="text-gray-200 text-sm mb-3">
                       In production, this would show a detailed Mapbox GL JS map with clustering, 
                       custom markers, and interactive popups for each print shop.
                     </p>
-                    <div className="text-xs text-gray-300 dark:text-gray-400">
+                    <div className="text-xs text-gray-300">
                       <div className="mb-1">
                         <strong>Your Location:</strong> {userCity === 'Here' ? 'Detecting...' : userCity}
                       </div>
@@ -105,19 +105,19 @@ export default function Hero() {
                 </div>
 
                 {/* Print Shop Stats */}
-                <div className="absolute top-4 left-4 bg-white/30 dark:bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/40 dark:border-white/10">
-                  <div className="text-sm font-medium text-gray-100 dark:text-white mb-1">Print Shops Found</div>
-                  <div className="text-2xl font-bold text-accent-300 dark:text-accent-400 mb-1">{mockPrintShops.length}</div>
-                  <div className="text-xs text-gray-300 dark:text-gray-400">Near {userCity === 'Here' ? 'You' : userCity}</div>
+                <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                  <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
+                  <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
+                  <div className="text-xs text-gray-300">Near {userCity === 'Here' ? 'You' : userCity}</div>
                 </div>
 
                 {/* Map controls */}
                 <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <button className="bg-white/30 dark:bg-white/5 backdrop-blur-sm p-2 rounded-lg border border-white/40 dark:border-white/10 hover:bg-white/40 dark:hover:bg-white/10 transition-colors">
-                    <span className="text-lg font-bold text-gray-100 dark:text-white">+</span>
+                  <button className="bg-white/10 backdrop-blur-sm p-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+                    <span className="text-lg font-bold text-white">+</span>
                   </button>
-                  <button className="bg-white/30 dark:bg-white/5 backdrop-blur-sm p-2 rounded-lg border border-white/40 dark:border-white/10 hover:bg-white/40 dark:hover:bg-white/10 transition-colors">
-                    <span className="text-lg font-bold text-gray-100 dark:text-white">−</span>
+                  <button className="bg-white/10 backdrop-blur-sm p-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+                    <span className="text-lg font-bold text-white">−</span>
                   </button>
                 </div>
               </div>
@@ -129,16 +129,16 @@ export default function Hero() {
                 {mockPrintShops.slice(0, 3).map((shop) => (
                   <div 
                     key={shop.id}
-                    className="bg-white/30 dark:bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/40 dark:border-white/10 hover:bg-white/40 dark:hover:bg-white/10 transition-all cursor-pointer"
+                    className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
                     onClick={() => setSelectedShop(selectedShop?.id === shop.id ? null : shop)}
                   >
                     <div className="flex items-start space-x-2">
-                      <MapPin className="w-4 h-4 text-accent-300 dark:text-accent-400 mt-1 flex-shrink-0" />
+                      <MapPin className="w-4 h-4 text-accent-300 mt-1 flex-shrink-0" />
                       <div>
-                        <h4 className="font-medium text-gray-100 dark:text-white text-sm">
+                        <h4 className="font-medium text-white text-sm">
                           {shop.name}
                         </h4>
-                        <p className="text-xs text-gray-300 dark:text-gray-400 mt-1">
+                        <p className="text-xs text-gray-300 mt-1">
                           {shop.specialty}
                         </p>
                         <div className="flex items-center text-yellow-400 mt-1">
@@ -154,12 +154,12 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <button className="bg-accent-500 hover:bg-accent-600 dark:bg-accent-600 dark:hover:bg-accent-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
+            <button className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
               Get Started
               <ArrowRight size={20} />
             </button>
             
-            <button className="bg-white/30 dark:bg-white/5 hover:bg-white/40 dark:hover:bg-white/10 text-gray-900 dark:text-white border border-white/50 dark:border-white/20 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm">
+            <button className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm">
               Learn More
             </button>
           </div>
@@ -168,8 +168,8 @@ export default function Hero() {
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <div className="w-6 h-10 border-2 border-gray-700 dark:border-white/30 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-gray-800 dark:bg-white/50 rounded-full mt-2 animate-bounce-gentle"></div>
+        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+          <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-bounce-gentle"></div>
         </div>
       </div>
     </section>
