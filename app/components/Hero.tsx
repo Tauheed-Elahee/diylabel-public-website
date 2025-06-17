@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 
 export default function Hero() {
   const [selectedShop, setSelectedShop] = useState<any>(null)
-  const [userCity, setUserCity] = useState<string>('New York')
+  const [userCity, setUserCity] = useState<string>('Here')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   
   // Mock data for print shops
@@ -31,11 +31,11 @@ export default function Hero() {
       } else if (data.principalSubdivision) {
         return data.principalSubdivision
       } else {
-        return 'Your City'
+        return 'Here'
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error)
-      return 'Your City'
+      return 'Here'
     }
   }
 
@@ -54,8 +54,8 @@ export default function Hero() {
         },
         (error) => {
           console.log('Geolocation error:', error)
-          // Fallback to default city
-          setUserCity('New York')
+          // Fallback to default
+          setUserCity('Here')
         }
       )
     }
@@ -72,7 +72,7 @@ export default function Hero() {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             Your Merch,
             <br />
-            <span className="text-accent-300">Made in {userCity}</span>
+            <span className="text-accent-300">Made {userCity}</span>
           </h1>
           
           {/* Map Container replacing the paragraph */}
@@ -93,7 +93,7 @@ export default function Hero() {
                     </p>
                     <div className="text-xs text-gray-300">
                       <div className="mb-1">
-                        <strong>Your Location:</strong> {userCity}
+                        <strong>Your Location:</strong> {userCity === 'Here' ? 'Detecting...' : userCity}
                       </div>
                       {userLocation && (
                         <div>
@@ -108,7 +108,7 @@ export default function Hero() {
                 <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                   <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
                   <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
-                  <div className="text-xs text-gray-300">Near {userCity}</div>
+                  <div className="text-xs text-gray-300">Near {userCity === 'Here' ? 'You' : userCity}</div>
                 </div>
 
                 {/* Map controls */}
