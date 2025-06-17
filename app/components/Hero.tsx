@@ -3,6 +3,16 @@
 import { ArrowRight, MapPin, Store, Printer } from 'lucide-react'
 
 export default function Hero() {
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById('features')
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
@@ -28,7 +38,10 @@ export default function Hero() {
               <ArrowRight size={20} />
             </button>
             
-            <button className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm">
+            <button 
+              onClick={scrollToFeatures}
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm"
+            >
               Learn More
             </button>
           </div>
