@@ -57,8 +57,8 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute inset-0 gradient-bg hero-pattern"></div>
       
-      {/* Content - Full Width */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center min-h-screen py-20">
+      {/* Content - Full Dimensions */}
+      <div className="absolute inset-0 z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
         
         {/* Content - Full Width */}
         <div className="animate-fade-in text-center lg:text-left w-full">
