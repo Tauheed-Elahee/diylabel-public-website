@@ -1,10 +1,9 @@
 'use client'
 
-import { ArrowRight, MapPin, Store, Printer, Search, Filter, Loader } from 'lucide-react'
+import { ArrowRight, MapPin, Store, Printer } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Hero() {
-  const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<any>(null)
   
   // Mock data for print shops
@@ -13,11 +12,6 @@ export default function Hero() {
     { id: 2, name: 'Quick Print Solutions', lat: 40.7589, lng: -73.9851, address: '456 Broadway, New York, NY', specialty: 'Business Cards & Flyers', rating: 4.9 },
     { id: 3, name: 'Eco Print Shop', lat: 40.6892, lng: -74.0445, address: '789 Green Ave, Brooklyn, NY', specialty: 'Sustainable Materials', rating: 4.7 },
   ]
-
-  const filteredShops = mockPrintShops.filter(shop =>
-    shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    shop.specialty.toLowerCase().includes(searchTerm.toLowerCase())
-  )
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -35,26 +29,6 @@ export default function Hero() {
           
           {/* Map Container replacing the paragraph */}
           <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto border border-white/20">
-            {/* Search and Filter Bar */}
-            <div className="p-4 border-b border-white/20">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search by name or specialty..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-white/30 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent bg-white/10 backdrop-blur-sm text-white placeholder-gray-300"
-                  />
-                </div>
-                <button className="flex items-center gap-2 px-6 py-3 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors">
-                  <Filter className="w-5 h-5" />
-                  Filters
-                </button>
-              </div>
-            </div>
-
             {/* Map Container */}
             <div className="relative h-64 md:h-80">
               <div className="w-full h-full bg-gradient-to-br from-blue-900/50 to-purple-900/50 relative">
@@ -78,10 +52,8 @@ export default function Hero() {
                 {/* Print Shop Stats */}
                 <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                   <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
-                  <div className="text-2xl font-bold text-accent-300 mb-1">{filteredShops.length}</div>
-                  <div className="text-xs text-gray-300">
-                    {searchTerm ? `Filtered by "${searchTerm}"` : 'All shops in area'}
-                  </div>
+                  <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
+                  <div className="text-xs text-gray-300">All shops in area</div>
                 </div>
 
                 {/* Map controls */}
@@ -99,7 +71,7 @@ export default function Hero() {
             {/* Mini Print Shops List */}
             <div className="p-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {filteredShops.slice(0, 3).map((shop) => (
+                {mockPrintShops.slice(0, 3).map((shop) => (
                   <div 
                     key={shop.id}
                     className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
