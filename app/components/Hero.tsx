@@ -81,7 +81,7 @@ export default function Hero() {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
             Your Merch,
             <br />
-            <span className="text-accent-600 dark:text-accent-400">{getHeadlineText()}</span>
+            <span style={{ color: '#f37316' }}>{getHeadlineText()}</span>
           </h1>
           
           {/* Map Container replacing the paragraph */}
