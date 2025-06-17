@@ -186,17 +186,14 @@ export default function InteractiveMap() {
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
     
-    // Add geolocate control with error callback
+    // Add geolocate control without onError callback
     map.current.addControl(
       new mapboxgl.GeolocateControl({
         positionOptions: {
           enableHighAccuracy: true
         },
         trackUserLocation: true,
-        showUserHeading: true,
-        onError: (error) => {
-          console.error('GeolocateControl error:', error)
-        }
+        showUserHeading: true
       }),
       'top-right'
     )
