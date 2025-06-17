@@ -1,12 +1,23 @@
 'use client'
 
 import { ArrowRight, MapPin, Store, Printer } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useTheme } from 'next-themes'
+import mapboxgl from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
+
+// Set Mapbox access token
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
 
 export default function Hero() {
+  const mapContainer = useRef<HTMLDivElement>(null)
+  const map = useRef<mapboxgl.Map | null>(null)
+  const markersRef = useRef<mapboxgl.Marker[]>([])
   const [selectedShop, setSelectedShop] = useState<any>(null)
   const [userCity, setUserCity] = useState<string>('Here')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
+  const [mapLoading, setMapLoading] = useState(true)
+  const { resolvedTheme } = useTheme()
   
   // Mock data for print shops
   const mockPrintShops = [
@@ -61,6 +72,124 @@ export default function Hero() {
     }
   }, [])
 
+  // Create custom marker element
+  const createMarkerElement = (shop: any) => {
+    const el = document.createElement('div')
+    el.className = 'custom-marker'
+    el.innerHTML = `
+      <div class="w-6 h-6 bg-accent-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    `
+    
+    el.addEventListener('click', () => {
+      setSelectedShop(shop)
+    })
+    
+    return el
+  }
+
+  // Create popup content
+  const createPopupContent = (shop: any) => {
+    return `
+      <div class="p-3 min-w-[200px]">
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-1 text-sm">${shop.name}</h3>
+        <p class="text-xs text-gray-600 dark:text-gray-300 mb-2">${shop.specialty}</p>
+        <div class="flex items-center text-yellow-500">
+          <span class="text-xs font-medium">${shop.rating}</span>
+          <span class="ml-1 text-xs">★</span>
+        </div>
+      </div>
+    `
+  }
+
+  // Add markers to map
+  const addMarkersToMap = (shops: any[]) => {
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.remove())
+    markersRef.current = []
+
+    shops.forEach(shop => {
+      const markerElement = createMarkerElement(shop)
+      
+      const marker = new mapboxgl.Marker(markerElement)
+        .setLngLat([shop.lng, shop.lat])
+        .addTo(map.current!)
+
+      const popup = new mapboxgl.Popup({
+        offset: 15,
+        closeButton: true,
+        closeOnClick: false
+      }).setHTML(createPopupContent(shop))
+
+      marker.setPopup(popup)
+      markersRef.current.push(marker)
+    })
+  }
+
+  // Initialize map
+  useEffect(() => {
+    if (map.current || !mapContainer.current) return
+
+    const initialLng = userLocation?.lng || -74.0060
+    const initialLat = userLocation?.lat || 40.7128
+
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
+      center: [initialLng, initialLat],
+      zoom: 11,
+      interactive: true
+    })
+
+    map.current.on('load', () => {
+      setMapLoading(false)
+      
+      // Add user location marker if available
+      if (userLocation) {
+        const userMarkerEl = document.createElement('div')
+        userMarkerEl.innerHTML = `
+          <div class="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
+        `
+        
+        new mapboxgl.Marker(userMarkerEl)
+          .setLngLat([userLocation.lng, userLocation.lat])
+          .addTo(map.current!)
+      }
+
+      // Add print shop markers
+      addMarkersToMap(mockPrintShops)
+    })
+
+    // Add minimal navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl({
+      showCompass: false,
+      showZoom: true
+    }), 'top-right')
+
+    return () => {
+      if (map.current) {
+        map.current.remove()
+        map.current = null
+      }
+    }
+  }, [userLocation, resolvedTheme])
+
+  // Update map style when theme changes
+  useEffect(() => {
+    if (map.current && !mapLoading) {
+      const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
+      map.current.setStyle(newStyle)
+      
+      map.current.once('styledata', () => {
+        // Re-add markers after style change
+        addMarkersToMap(mockPrintShops)
+      })
+    }
+  }, [resolvedTheme])
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
@@ -75,51 +204,32 @@ export default function Hero() {
             <span className="text-accent-300">Made {userCity}</span>
           </h1>
           
-          {/* Map Container replacing the paragraph */}
+          {/* Interactive Map Container */}
           <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto border border-white/20">
             {/* Map Container */}
             <div className="relative h-64 md:h-80">
-              <div className="w-full h-full bg-gradient-to-br from-blue-900/50 to-purple-900/50 relative">
-                {/* Enhanced Mock Map Interface */}
-                <div className="absolute inset-0 flex items-center justify-center">
+              <div ref={mapContainer} className="w-full h-full" />
+
+              {/* Loading overlay */}
+              {mapLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                   <div className="text-center p-6">
-                    <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3" />
+                    <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3 animate-pulse" />
                     <h3 className="text-lg font-semibold text-white mb-2">
-                      Full Interactive Map
+                      Loading Interactive Map
                     </h3>
-                    <p className="text-gray-200 text-sm mb-3">
-                      In production, this would show a detailed Mapbox GL JS map with clustering, 
-                      custom markers, and interactive popups for each print shop.
+                    <p className="text-gray-200 text-sm">
+                      Discovering print shops near you...
                     </p>
-                    <div className="text-xs text-gray-300">
-                      <div className="mb-1">
-                        <strong>Your Location:</strong> {userCity === 'Here' ? 'Detecting...' : userCity}
-                      </div>
-                      {userLocation && (
-                        <div>
-                          Coordinates: {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
-                        </div>
-                      )}
-                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Print Shop Stats */}
-                <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                  <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
-                  <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
-                  <div className="text-xs text-gray-300">Near {userCity === 'Here' ? 'You' : userCity}</div>
-                </div>
-
-                {/* Map controls */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <button className="bg-white/10 backdrop-blur-sm p-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
-                    <span className="text-lg font-bold text-white">+</span>
-                  </button>
-                  <button className="bg-white/10 backdrop-blur-sm p-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
-                    <span className="text-lg font-bold text-white">−</span>
-                  </button>
-                </div>
+              {/* Print Shop Stats Overlay */}
+              <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
+                <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
+                <div className="text-xs text-gray-300">Near {userCity === 'Here' ? 'You' : userCity}</div>
               </div>
             </div>
 
@@ -130,7 +240,16 @@ export default function Hero() {
                   <div 
                     key={shop.id}
                     className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
-                    onClick={() => setSelectedShop(selectedShop?.id === shop.id ? null : shop)}
+                    onClick={() => {
+                      setSelectedShop(selectedShop?.id === shop.id ? null : shop)
+                      if (map.current) {
+                        map.current.flyTo({
+                          center: [shop.lng, shop.lat],
+                          zoom: 13,
+                          duration: 1000
+                        })
+                      }
+                    }}
                   >
                     <div className="flex items-start space-x-2">
                       <MapPin className="w-4 h-4 text-accent-300 mt-1 flex-shrink-0" />
