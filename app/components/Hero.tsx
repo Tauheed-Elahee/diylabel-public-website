@@ -42,6 +42,17 @@ export default function Hero() {
     }
   }
 
+  // Scroll to CTA section for Get Started action
+  const scrollToCTA = () => {
+    const ctaSection = document.querySelector('section[class*="bg-gradient-to-r"]')
+    if (ctaSection) {
+      ctaSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
   // Reverse geocoding function to get city from coordinates
   const getCityFromCoordinates = async (latitude: number, longitude: number) => {
     try {
@@ -356,7 +367,10 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 sm:mb-20">
-            <button className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
+            <button 
+              onClick={scrollToCTA}
+              className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
+            >
               Get Started
               <ArrowRight size={20} />
             </button>
