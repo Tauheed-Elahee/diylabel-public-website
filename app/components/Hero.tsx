@@ -31,6 +31,17 @@ export default function Hero() {
   const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN && 
                         process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN !== ''
 
+  // Scroll to Features section
+  const scrollToFeatures = () => {
+    const featuresSection = document.getElementById('features')
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
   // Reverse geocoding function to get city from coordinates
   const getCityFromCoordinates = async (latitude: number, longitude: number) => {
     try {
@@ -350,7 +361,10 @@ export default function Hero() {
               <ArrowRight size={20} />
             </button>
             
-            <button className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm">
+            <button 
+              onClick={scrollToFeatures}
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm"
+            >
               Learn More
             </button>
           </div>
