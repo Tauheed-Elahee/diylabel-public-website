@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { mockPrintShops, type PrintShop } from '../data/printShops'
+import { filterShopsByDistance } from '../utils/distance'
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -18,10 +19,12 @@ export default function Hero() {
   const [userCity, setUserCity] = useState<string>('Ottawa')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
+  const [nearbyShops, setNearbyShops] = useState<PrintShop[]>([])
   const { resolvedTheme } = useTheme()
   
-  // Sample of print shops for hero display (first 3)
-  const heroShops = mockPrintShops.slice(0, 3)
+  // Default coordinates (Ottawa)
+  const defaultLat = 45.4215
+  const defaultLng = -75.6972
 
   // Reverse geocoding function to get city from coordinates
   const getCityFromCoordinates = async (latitude: number, longitude: number) => {
@@ -47,6 +50,12 @@ export default function Hero() {
     }
   }
 
+  // Filter shops within 50km radius
+  const updateNearbyShops = (lat: number, lng: number) => {
+    const filtered = filterShopsByDistance(mockPrintShops, lat, lng, 50)
+    setNearbyShops(filtered.slice(0, 3)) // Show max 3 shops in hero
+  }
+
   // Get user's location and city
   useEffect(() => {
     if (navigator.geolocation) {
@@ -59,13 +68,21 @@ export default function Hero() {
           // Get city name from coordinates
           const cityName = await getCityFromCoordinates(userLat, userLng)
           setUserCity(cityName)
+          
+          // Update nearby shops based on user location
+          updateNearbyShops(userLat, userLng)
         },
         (error) => {
           console.log('Geolocation error:', error)
-          // Fallback to Ottawa
+          // Fallback to Ottawa and find shops near Ottawa
           setUserCity('Ottawa')
+          updateNearbyShops(defaultLat, defaultLng)
         }
       )
+    } else {
+      // Geolocation not supported, use default location
+      setUserCity('Ottawa')
+      updateNearbyShops(defaultLat, defaultLng)
     }
   }, [])
 
@@ -130,9 +147,9 @@ export default function Hero() {
   useEffect(() => {
     if (map.current || !mapContainer.current) return
 
-    // Default to Ottawa coordinates
-    const initialLng = userLocation?.lng || -75.6972
-    const initialLat = userLocation?.lat || 45.4215
+    // Use user location or default to Ottawa coordinates
+    const initialLng = userLocation?.lng || defaultLng
+    const initialLat = userLocation?.lat || defaultLat
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -157,8 +174,8 @@ export default function Hero() {
           .addTo(map.current!)
       }
 
-      // Add print shop markers
-      addMarkersToMap(heroShops)
+      // Add print shop markers for nearby shops
+      addMarkersToMap(nearbyShops)
     })
 
     // Add minimal navigation controls
@@ -173,7 +190,7 @@ export default function Hero() {
         map.current = null
       }
     }
-  }, [userLocation, resolvedTheme])
+  }, [userLocation, resolvedTheme, nearbyShops])
 
   // Update map style when theme changes
   useEffect(() => {
@@ -183,10 +200,10 @@ export default function Hero() {
       
       map.current.once('styledata', () => {
         // Re-add markers after style change
-        addMarkersToMap(heroShops)
+        addMarkersToMap(nearbyShops)
       })
     }
-  }, [resolvedTheme])
+  }, [resolvedTheme, nearbyShops])
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
@@ -228,47 +245,55 @@ export default function Hero() {
               {/* Print Shop Stats Overlay */}
               <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                 <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
-                <div className="text-2xl font-bold text-accent-300 mb-1">{heroShops.length}</div>
-                <div className="text-xs text-gray-300">Near {userCity}</div>
+                <div className="text-2xl font-bold text-accent-300 mb-1">{nearbyShops.length}</div>
+                <div className="text-xs text-gray-300">Within 50km of {userCity}</div>
               </div>
             </div>
 
             {/* Mini Print Shops List */}
             <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {heroShops.map((shop) => (
-                  <div 
-                    key={shop.id}
-                    className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
-                    onClick={() => {
-                      setSelectedShop(selectedShop?.id === shop.id ? null : shop)
-                      if (map.current) {
-                        map.current.flyTo({
-                          center: [shop.lng, shop.lat],
-                          zoom: 13,
-                          duration: 1000
-                        })
-                      }
-                    }}
-                  >
-                    <div className="flex items-start space-x-2">
-                      <MapPin className="w-4 h-4 text-accent-300 mt-1 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium text-white text-sm">
-                          {shop.name}
-                        </h4>
-                        <p className="text-xs text-gray-300 mt-1">
-                          {shop.specialty}
-                        </p>
-                        <div className="flex items-center text-yellow-400 mt-1">
-                          <span className="text-xs">{shop.rating}</span>
-                          <span className="ml-1 text-xs">★</span>
+              {nearbyShops.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {nearbyShops.map((shop) => (
+                    <div 
+                      key={shop.id}
+                      className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
+                      onClick={() => {
+                        setSelectedShop(selectedShop?.id === shop.id ? null : shop)
+                        if (map.current) {
+                          map.current.flyTo({
+                            center: [shop.lng, shop.lat],
+                            zoom: 13,
+                            duration: 1000
+                          })
+                        }
+                      }}
+                    >
+                      <div className="flex items-start space-x-2">
+                        <MapPin className="w-4 h-4 text-accent-300 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-medium text-white text-sm">
+                            {shop.name}
+                          </h4>
+                          <p className="text-xs text-gray-300 mt-1">
+                            {shop.specialty}
+                          </p>
+                          <div className="flex items-center text-yellow-400 mt-1">
+                            <span className="text-xs">{shop.rating}</span>
+                            <span className="ml-1 text-xs">★</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <MapPin className="w-8 h-8 text-accent-300 mx-auto mb-2" />
+                  <p className="text-white text-sm mb-1">No print shops within 50km</p>
+                  <p className="text-gray-300 text-xs">Expanding search radius...</p>
+                </div>
+              )}
             </div>
           </div>
 
