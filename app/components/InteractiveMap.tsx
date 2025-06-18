@@ -144,7 +144,19 @@ export default function InteractiveMap() {
       container: mapContainer.current,
       style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
       center: [lng, lat],
-      zoom: zoom
+      zoom: zoom,
+      // Enable full interactivity - copied from Hero component
+      interactive: true,
+      dragPan: true,
+      dragRotate: true,
+      scrollZoom: true,
+      touchZoomRotate: true,
+      doubleClickZoom: true,
+      keyboard: true,
+      // Remove any restrictions
+      maxBounds: undefined,
+      minZoom: 0,
+      maxZoom: 24
     })
 
     map.current.on('load', () => {
@@ -177,7 +189,7 @@ export default function InteractiveMap() {
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
     
-    // Add geolocate control without onError callback
+    // Add geolocate control
     map.current.addControl(
       new mapboxgl.GeolocateControl({
         positionOptions: {
