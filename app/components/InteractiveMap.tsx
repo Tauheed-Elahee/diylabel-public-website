@@ -262,11 +262,21 @@ export default function InteractiveMap() {
     }
   }, [userLocation, loading, mapError])
 
-  // Filter shops by search term
-  const filteredShops = mockPrintShops.filter(shop =>
-    shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    shop.specialty.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Enhanced filter function to include city search
+  const filteredShops = mockPrintShops.filter(shop => {
+    const searchLower = searchTerm.toLowerCase()
+    
+    // Extract city from address (assuming format: "123 Street, City, Province")
+    const addressParts = shop.address.split(', ')
+    const city = addressParts.length >= 2 ? addressParts[1].toLowerCase() : ''
+    
+    return (
+      shop.name.toLowerCase().includes(searchLower) ||
+      shop.specialty.toLowerCase().includes(searchLower) ||
+      city.includes(searchLower) ||
+      shop.address.toLowerCase().includes(searchLower)
+    )
+  })
 
   // Sort shops based on selected criteria
   const sortedAndFilteredShops = [...filteredShops].sort((a, b) => {
@@ -314,24 +324,53 @@ export default function InteractiveMap() {
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-          {/* Search and Filter Bar */}
+          {/* Enhanced Search and Filter Bar */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search by name or specialty..."
+                  placeholder="Search by name, specialty, or city..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
+                {searchTerm && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      aria-label="Clear search"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
               <button className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                 <Filter className="w-5 h-5" />
                 Filters
               </button>
             </div>
+            
+            {/* Search suggestions/examples */}
+            {!searchTerm && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400">Try searching:</span>
+                {['Toronto', 'T-Shirts', 'Sustainable', 'Montreal', 'Custom Designs'].map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => setSearchTerm(suggestion)}
+                    className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Map Container */}
@@ -409,6 +448,10 @@ export default function InteractiveMap() {
                   ? calculateDistance(userLocation.lat, userLocation.lng, shop.lat, shop.lng)
                   : null
 
+                // Extract city from address for display
+                const addressParts = shop.address.split(', ')
+                const city = addressParts.length >= 2 ? addressParts[1] : ''
+
                 return (
                   <div 
                     key={shop.id}
@@ -434,6 +477,8 @@ export default function InteractiveMap() {
                             {shop.name}
                           </h4>
                           <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            {city && <span className="font-medium">{city}</span>}
+                            {city && <span className="mx-1">•</span>}
                             {shop.address}
                           </p>
                           {distance && (
@@ -481,7 +526,18 @@ export default function InteractiveMap() {
               <div className="text-center py-12">
                 <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No print shops found</h3>
-                <p className="text-gray-600 dark:text-gray-300">Try adjusting your search terms or filters.</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  {searchTerm ? `No results for "${searchTerm}". ` : ''}
+                  Try adjusting your search terms or filters.
+                </p>
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Clear search and show all shops
+                  </button>
+                )}
               </div>
             )}
           </div>
