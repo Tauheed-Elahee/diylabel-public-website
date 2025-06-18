@@ -26,6 +26,7 @@ export default function InteractiveMap() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'name'>('distance')
+  const [showAllShops, setShowAllShops] = useState(false)
   const { theme, resolvedTheme } = useTheme()
 
   // Check if Mapbox token is available
@@ -298,12 +299,15 @@ export default function InteractiveMap() {
     }
   })
 
+  // Limit shops display based on showAllShops state
+  const displayedShops = showAllShops ? sortedAndFilteredShops : sortedAndFilteredShops.slice(0, 6)
+
   // Update markers when search or sort changes
   useEffect(() => {
     if (map.current && !loading && !mapError) {
-      addMarkersToMap(sortedAndFilteredShops)
+      addMarkersToMap(displayedShops)
     }
-  }, [searchTerm, sortBy, loading, mapError, userLocation])
+  }, [searchTerm, sortBy, loading, mapError, userLocation, showAllShops])
 
   // Handle sort change
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -429,20 +433,35 @@ export default function InteractiveMap() {
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {searchTerm ? `Search Results (${sortedAndFilteredShops.length})` : `Print Shops Across Canada (${sortedAndFilteredShops.length})`}
+                {!showAllShops && sortedAndFilteredShops.length > 6 && (
+                  <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
+                    - Showing 6 of {sortedAndFilteredShops.length}
+                  </span>
+                )}
               </h3>
-              <select 
-                value={sortBy}
-                onChange={handleSortChange}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="distance">Sort by Distance</option>
-                <option value="rating">Sort by Rating</option>
-                <option value="name">Sort by Name</option>
-              </select>
+              <div className="flex items-center gap-3">
+                {sortedAndFilteredShops.length > 6 && (
+                  <button
+                    onClick={() => setShowAllShops(!showAllShops)}
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+                  >
+                    {showAllShops ? 'Show Less' : `Show All ${sortedAndFilteredShops.length}`}
+                  </button>
+                )}
+                <select 
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="distance">Sort by Distance</option>
+                  <option value="rating">Sort by Rating</option>
+                  <option value="name">Sort by Name</option>
+                </select>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedAndFilteredShops.map((shop) => {
+              {displayedShops.map((shop) => {
                 // Calculate distance for display
                 const distance = userLocation 
                   ? calculateDistance(userLocation.lat, userLocation.lng, shop.lat, shop.lng)
