@@ -14,7 +14,7 @@ export default function Hero() {
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const [selectedShop, setSelectedShop] = useState<any>(null)
-  const [userCity, setUserCity] = useState<string>('Here')
+  const [userCity, setUserCity] = useState<string>('')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
   const { resolvedTheme } = useTheme()
@@ -42,11 +42,11 @@ export default function Hero() {
       } else if (data.principalSubdivision) {
         return data.principalSubdivision
       } else {
-        return 'Here'
+        return ''
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error)
-      return 'Here'
+      return ''
     }
   }
 
@@ -66,7 +66,7 @@ export default function Hero() {
         (error) => {
           console.log('Geolocation error:', error)
           // Fallback to default
-          setUserCity('Here')
+          setUserCity('')
         }
       )
     }
@@ -201,7 +201,9 @@ export default function Hero() {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             Your Merch,
             <br />
-            <span className="text-accent-300">Made {userCity}</span>
+            <span className="text-accent-300">
+              {userCity ? `Made in ${userCity}` : 'Made Here'}
+            </span>
           </h1>
           
           {/* Interactive Map Container */}
@@ -229,7 +231,7 @@ export default function Hero() {
               <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                 <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
                 <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
-                <div className="text-xs text-gray-300">Near {userCity === 'Here' ? 'You' : userCity}</div>
+                <div className="text-xs text-gray-300">Near {userCity || 'You'}</div>
               </div>
             </div>
 
