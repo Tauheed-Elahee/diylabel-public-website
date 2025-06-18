@@ -5,9 +5,10 @@ import { useTheme } from 'next-themes'
 import { MapPin, Loader, Search, Filter, AlertCircle } from 'lucide-react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { mockPrintShops, type PrintShop } from '../data/printShops'
+import { type PrintShop } from '../../lib/supabase'
 import { calculateDistance } from '../utils/distance'
-import { normalizeText, searchInText, extractCityFromAddress } from '../utils/searchUtils'
+import { extractCityFromAddress } from '../utils/searchUtils'
+import { usePrintShops } from '../hooks/usePrintShops'
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -19,7 +20,7 @@ export default function InteractiveMap() {
   const [lng, setLng] = useState(-75.6972)
   const [lat, setLat] = useState(45.4215)
   const [zoom, setZoom] = useState(11)
-  const [loading, setLoading] = useState(true)
+  const [mapLoading, setMapLoading] = useState(true)
   const [mapError, setMapError] = useState(false)
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [userCity, setUserCity] = useState<string>('Ottawa, ON, Canada')
@@ -27,7 +28,15 @@ export default function InteractiveMap() {
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'name'>('distance')
   const [showAllShops, setShowAllShops] = useState(false)
-  const { theme, resolvedTheme } = useTheme()
+  const { resolvedTheme } = useTheme()
+
+  // Use the custom hook to fetch print shops from Supabase
+  const { printShops, loading: shopsLoading, error: shopsError } = usePrintShops({
+    searchTerm,
+    userLocation,
+    sortBy,
+    radiusKm: 50
+  })
 
   // Check if Mapbox token is available
   const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN && 
@@ -152,7 +161,7 @@ export default function InteractiveMap() {
     if (map.current || !mapContainer.current || !hasMapboxToken) {
       if (!hasMapboxToken) {
         setMapError(true)
-        setLoading(false)
+        setMapLoading(false)
       }
       return
     }
@@ -163,7 +172,6 @@ export default function InteractiveMap() {
         style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
         center: [lng, lat],
         zoom: zoom,
-        // Enable full interactivity - copied from Hero component
         interactive: true,
         dragPan: true,
         dragRotate: true,
@@ -171,14 +179,13 @@ export default function InteractiveMap() {
         touchZoomRotate: true,
         doubleClickZoom: true,
         keyboard: true,
-        // Remove any restrictions
         maxBounds: undefined,
         minZoom: 0,
         maxZoom: 24
       })
 
       map.current.on('load', () => {
-        setLoading(false)
+        setMapLoading(false)
         setMapError(false)
         
         // Add user location marker if available
@@ -194,13 +201,13 @@ export default function InteractiveMap() {
         }
 
         // Add print shop markers
-        addMarkersToMap(sortedAndFilteredShops)
+        addMarkersToMap(displayedShops)
       })
 
       map.current.on('error', (e) => {
         console.error('Mapbox error:', e)
         setMapError(true)
-        setLoading(false)
+        setMapLoading(false)
       })
 
       map.current.on('move', () => {
@@ -229,7 +236,7 @@ export default function InteractiveMap() {
     } catch (error) {
       console.error('Map initialization error:', error)
       setMapError(true)
-      setLoading(false)
+      setMapLoading(false)
     }
 
     return () => {
@@ -242,72 +249,37 @@ export default function InteractiveMap() {
 
   // Update map style when theme changes
   useEffect(() => {
-    if (map.current && !loading && !mapError) {
+    if (map.current && !mapLoading && !mapError) {
       const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
       map.current.setStyle(newStyle)
       
       map.current.once('styledata', () => {
         // Re-add markers after style change
-        addMarkersToMap(sortedAndFilteredShops)
+        addMarkersToMap(displayedShops)
       })
     }
   }, [resolvedTheme])
 
   // Update map center when user location changes
   useEffect(() => {
-    if (map.current && userLocation && !loading && !mapError) {
+    if (map.current && userLocation && !mapLoading && !mapError) {
       map.current.flyTo({
         center: [userLocation.lng, userLocation.lat],
         zoom: 12,
         duration: 2000
       })
     }
-  }, [userLocation, loading, mapError])
-
-  // Enhanced filter function with accent and case insensitivity
-  const filteredShops = mockPrintShops.filter(shop => {
-    if (!searchTerm.trim()) return true
-    
-    // Extract city from address
-    const city = extractCityFromAddress(shop.address)
-    
-    return (
-      searchInText(searchTerm, shop.name) ||
-      searchInText(searchTerm, shop.specialty) ||
-      searchInText(searchTerm, city) ||
-      searchInText(searchTerm, shop.address)
-    )
-  })
-
-  // Sort shops based on selected criteria
-  const sortedAndFilteredShops = [...filteredShops].sort((a, b) => {
-    switch (sortBy) {
-      case 'distance':
-        if (!userLocation) return 0
-        const distanceA = calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng)
-        const distanceB = calculateDistance(userLocation.lat, userLocation.lng, b.lat, b.lng)
-        return distanceA - distanceB
-      
-      case 'rating':
-        return b.rating - a.rating // Higher rating first
-      
-      case 'name':
-        return a.name.localeCompare(b.name)
-      
-      default:
-        return 0
-    }
-  })
+  }, [userLocation, mapLoading, mapError])
 
   // Limit shops display based on showAllShops state
-  const displayedShops = showAllShops ? sortedAndFilteredShops : sortedAndFilteredShops.slice(0, 6)
+  const displayedShops = showAllShops ? printShops : printShops.slice(0, 6)
 
-  // Update markers when search or sort changes
+  // Update markers when shops change
   useEffect(() => {
-    if (map.current && !loading && !mapError) {
+    if (map.current && !mapLoading && !mapError) {
       addMarkersToMap(displayedShops)
     }
-  }, [searchTerm, sortBy, loading, mapError, userLocation, showAllShops])
+  }, [displayedShops, mapLoading, mapError])
 
   // Handle sort change
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -380,32 +352,38 @@ export default function InteractiveMap() {
           {/* Map Container */}
           <div className="relative h-96 md:h-[500px]">
             {/* Loading State */}
-            {loading && !mapError && (
+            {(mapLoading || shopsLoading) && !mapError && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 z-10">
                 <div className="text-center">
                   <Loader className="w-8 h-8 animate-spin text-primary-600 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-300">Loading interactive map...</p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {mapLoading ? 'Loading interactive map...' : 'Loading print shops...'}
+                  </p>
                 </div>
               </div>
             )}
 
-            {/* Error State - No Mapbox Token */}
-            {mapError && (
+            {/* Error State */}
+            {(mapError || shopsError) && (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 z-10">
                 <div className="text-center p-8 max-w-md">
                   <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    Map Temporarily Unavailable
+                    {mapError ? 'Map Temporarily Unavailable' : 'Error Loading Print Shops'}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    The interactive map requires a Mapbox access token to display. 
-                    You can still browse our print shop directory below.
+                    {mapError 
+                      ? 'The interactive map requires a Mapbox access token to display. You can still browse our print shop directory below.'
+                      : 'There was an error loading the print shop data. Please try refreshing the page.'
+                    }
                   </p>
-                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-                    <p className="text-sm text-amber-800 dark:text-amber-200">
-                      <strong>For developers:</strong> Add your Mapbox token to the environment variables to enable the map.
-                    </p>
-                  </div>
+                  {mapError && (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                      <p className="text-sm text-amber-800 dark:text-amber-200">
+                        <strong>For developers:</strong> Add your Mapbox token to the environment variables to enable the map.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -414,10 +392,10 @@ export default function InteractiveMap() {
             <div ref={mapContainer} className="w-full h-full" />
 
             {/* Map Info Overlay - Only show if map is working */}
-            {!mapError && (
+            {!mapError && !shopsError && (
               <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg max-w-xs z-10">
                 <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Print Shops Found</div>
-                <div className="text-2xl font-bold text-primary-600 mb-2">{sortedAndFilteredShops.length}</div>
+                <div className="text-2xl font-bold text-primary-600 mb-2">{printShops.length}</div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                   {searchTerm ? `Filtered by "${searchTerm}"` : 'Across Canada'}
                 </div>
@@ -432,20 +410,20 @@ export default function InteractiveMap() {
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {searchTerm ? `Search Results (${sortedAndFilteredShops.length})` : `Print Shops Across Canada (${sortedAndFilteredShops.length})`}
-                {!showAllShops && sortedAndFilteredShops.length > 6 && (
+                {searchTerm ? `Search Results (${printShops.length})` : `Print Shops Across Canada (${printShops.length})`}
+                {!showAllShops && printShops.length > 6 && (
                   <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
-                    - Showing 6 of {sortedAndFilteredShops.length}
+                    - Showing 6 of {printShops.length}
                   </span>
                 )}
               </h3>
               <div className="flex items-center gap-3">
-                {sortedAndFilteredShops.length > 6 && (
+                {printShops.length > 6 && (
                   <button
                     onClick={() => setShowAllShops(!showAllShops)}
                     className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
                   >
-                    {showAllShops ? 'Show Less' : `Show All ${sortedAndFilteredShops.length}`}
+                    {showAllShops ? 'Show Less' : `Show All ${printShops.length}`}
                   </button>
                 )}
                 <select 
@@ -540,7 +518,7 @@ export default function InteractiveMap() {
               })}
             </div>
 
-            {sortedAndFilteredShops.length === 0 && (
+            {printShops.length === 0 && !shopsLoading && (
               <div className="text-center py-12">
                 <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No print shops found</h3>

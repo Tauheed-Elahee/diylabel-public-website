@@ -5,8 +5,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useTheme } from 'next-themes'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { mockPrintShops, type PrintShop } from '../data/printShops'
-import { filterShopsByDistance } from '../utils/distance'
+import { type PrintShop } from '../../lib/supabase'
+import { usePrintShops } from '../hooks/usePrintShops'
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -20,12 +20,20 @@ export default function Hero() {
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
   const [mapError, setMapError] = useState(false)
-  const [nearbyShops, setNearbyShops] = useState<PrintShop[]>([])
   const { resolvedTheme } = useTheme()
   
   // Default coordinates (Ottawa)
   const defaultLat = 45.4215
   const defaultLng = -75.6972
+
+  // Use the custom hook to fetch nearby print shops from Supabase
+  const { printShops: nearbyShops, loading: shopsLoading } = usePrintShops({
+    userLocation,
+    radiusKm: 50
+  })
+
+  // Limit to 3 shops for hero display
+  const heroShops = nearbyShops.slice(0, 3)
 
   // Check if Mapbox token is available
   const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN && 
@@ -77,12 +85,6 @@ export default function Hero() {
     }
   }
 
-  // Filter shops within 50km radius
-  const updateNearbyShops = (lat: number, lng: number) => {
-    const filtered = filterShopsByDistance(mockPrintShops, lat, lng, 50)
-    setNearbyShops(filtered.slice(0, 3)) // Show max 3 shops in hero
-  }
-
   // Get user's location and city
   useEffect(() => {
     if (navigator.geolocation) {
@@ -95,21 +97,16 @@ export default function Hero() {
           // Get city name from coordinates
           const cityName = await getCityFromCoordinates(userLat, userLng)
           setUserCity(cityName)
-          
-          // Update nearby shops based on user location
-          updateNearbyShops(userLat, userLng)
         },
         (error) => {
           console.log('Geolocation error:', error)
-          // Fallback to Ottawa and find shops near Ottawa
+          // Fallback to Ottawa
           setUserCity('Ottawa')
-          updateNearbyShops(defaultLat, defaultLng)
         }
       )
     } else {
       // Geolocation not supported, use default location
       setUserCity('Ottawa')
-      updateNearbyShops(defaultLat, defaultLng)
     }
   }, [])
 
@@ -212,7 +209,7 @@ export default function Hero() {
         }
 
         // Add print shop markers for nearby shops
-        addMarkersToMap(nearbyShops)
+        addMarkersToMap(heroShops)
       })
 
       map.current.on('error', (e) => {
@@ -239,7 +236,7 @@ export default function Hero() {
         map.current = null
       }
     }
-  }, [userLocation, resolvedTheme, nearbyShops, hasMapboxToken])
+  }, [userLocation, resolvedTheme, heroShops, hasMapboxToken])
 
   // Update map style when theme changes
   useEffect(() => {
@@ -249,10 +246,10 @@ export default function Hero() {
       
       map.current.once('styledata', () => {
         // Re-add markers after style change
-        addMarkersToMap(nearbyShops)
+        addMarkersToMap(heroShops)
       })
     }
-  }, [resolvedTheme, nearbyShops])
+  }, [resolvedTheme, heroShops])
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -277,7 +274,7 @@ export default function Hero() {
               <div ref={mapContainer} className="w-full h-full" />
 
               {/* Loading overlay */}
-              {mapLoading && !mapError && (
+              {(mapLoading || shopsLoading) && !mapError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                   <div className="text-center p-6">
                     <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3 animate-pulse" />
@@ -313,7 +310,7 @@ export default function Hero() {
               {!mapError && (
                 <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                   <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
-                  <div className="text-2xl font-bold text-accent-300 mb-1">{nearbyShops.length}</div>
+                  <div className="text-2xl font-bold text-accent-300 mb-1">{heroShops.length}</div>
                   <div className="text-xs text-gray-300">Within 50km of {userCity}</div>
                 </div>
               )}
@@ -321,9 +318,9 @@ export default function Hero() {
 
             {/* Mini Print Shops List */}
             <div className="p-4">
-              {nearbyShops.length > 0 ? (
+              {heroShops.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {nearbyShops.map((shop) => (
+                  {heroShops.map((shop) => (
                     <div 
                       key={shop.id}
                       className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
@@ -359,8 +356,12 @@ export default function Hero() {
               ) : (
                 <div className="text-center py-6">
                   <MapPin className="w-8 h-8 text-accent-300 mx-auto mb-2" />
-                  <p className="text-white text-sm mb-1">No print shops within 50km</p>
-                  <p className="text-gray-300 text-xs">Expanding search radius...</p>
+                  <p className="text-white text-sm mb-1">
+                    {shopsLoading ? 'Loading print shops...' : 'No print shops within 50km'}
+                  </p>
+                  <p className="text-gray-300 text-xs">
+                    {shopsLoading ? 'Please wait...' : 'Expanding search radius...'}
+                  </p>
                 </div>
               )}
             </div>
