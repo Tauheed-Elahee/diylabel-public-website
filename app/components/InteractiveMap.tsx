@@ -7,6 +7,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { mockPrintShops, type PrintShop } from '../data/printShops'
 import { calculateDistance } from '../utils/distance'
+import { normalizeText, searchInText, extractCityFromAddress } from '../utils/searchUtils'
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -262,19 +263,18 @@ export default function InteractiveMap() {
     }
   }, [userLocation, loading, mapError])
 
-  // Enhanced filter function to include city search
+  // Enhanced filter function with accent and case insensitivity
   const filteredShops = mockPrintShops.filter(shop => {
-    const searchLower = searchTerm.toLowerCase()
+    if (!searchTerm.trim()) return true
     
-    // Extract city from address (assuming format: "123 Street, City, Province")
-    const addressParts = shop.address.split(', ')
-    const city = addressParts.length >= 2 ? addressParts[1].toLowerCase() : ''
+    // Extract city from address
+    const city = extractCityFromAddress(shop.address)
     
     return (
-      shop.name.toLowerCase().includes(searchLower) ||
-      shop.specialty.toLowerCase().includes(searchLower) ||
-      city.includes(searchLower) ||
-      shop.address.toLowerCase().includes(searchLower)
+      searchInText(searchTerm, shop.name) ||
+      searchInText(searchTerm, shop.specialty) ||
+      searchInText(searchTerm, city) ||
+      searchInText(searchTerm, shop.address)
     )
   })
 
@@ -334,7 +334,7 @@ export default function InteractiveMap() {
                   placeholder="Search by name, specialty, or city..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
                 {searchTerm && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -360,7 +360,7 @@ export default function InteractiveMap() {
             {!searchTerm && (
               <div className="mt-3 flex flex-wrap gap-2">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Try searching:</span>
-                {['Toronto', 'T-Shirts', 'Sustainable', 'Montreal', 'Custom Designs'].map((suggestion) => (
+                {['Toronto', 'Montréal', 'T-Shirts', 'Sustainable', 'Québec', 'Custom Designs'].map((suggestion) => (
                   <button
                     key={suggestion}
                     onClick={() => setSearchTerm(suggestion)}
@@ -449,8 +449,7 @@ export default function InteractiveMap() {
                   : null
 
                 // Extract city from address for display
-                const addressParts = shop.address.split(', ')
-                const city = addressParts.length >= 2 ? addressParts[1] : ''
+                const city = extractCityFromAddress(shop.address)
 
                 return (
                   <div 
