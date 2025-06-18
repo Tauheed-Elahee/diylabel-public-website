@@ -19,12 +19,17 @@ export default function Hero() {
   const [userCity, setUserCity] = useState<string>('Ottawa')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
+  const [mapError, setMapError] = useState(false)
   const [nearbyShops, setNearbyShops] = useState<PrintShop[]>([])
   const { resolvedTheme } = useTheme()
   
   // Default coordinates (Ottawa)
   const defaultLat = 45.4215
   const defaultLng = -75.6972
+
+  // Check if Mapbox token is available
+  const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN && 
+                        process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN !== ''
 
   // Reverse geocoding function to get city from coordinates
   const getCityFromCoordinates = async (latitude: number, longitude: number) => {
@@ -121,6 +126,8 @@ export default function Hero() {
 
   // Add markers to map
   const addMarkersToMap = (shops: PrintShop[]) => {
+    if (!map.current) return
+    
     // Clear existing markers
     markersRef.current.forEach(marker => marker.remove())
     markersRef.current = []
@@ -145,44 +152,64 @@ export default function Hero() {
 
   // Initialize map
   useEffect(() => {
-    if (map.current || !mapContainer.current) return
-
-    // Use user location or default to Ottawa coordinates
-    const initialLng = userLocation?.lng || defaultLng
-    const initialLat = userLocation?.lat || defaultLat
-
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
-      center: [initialLng, initialLat],
-      zoom: 11,
-      interactive: true
-    })
-
-    map.current.on('load', () => {
-      setMapLoading(false)
-      
-      // Add user location marker if available
-      if (userLocation) {
-        const userMarkerEl = document.createElement('div')
-        userMarkerEl.innerHTML = `
-          <div class="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
-        `
-        
-        new mapboxgl.Marker(userMarkerEl)
-          .setLngLat([userLocation.lng, userLocation.lat])
-          .addTo(map.current!)
+    if (map.current || !mapContainer.current || !hasMapboxToken) {
+      if (!hasMapboxToken) {
+        setMapError(true)
+        setMapLoading(false)
       }
+      return
+    }
 
-      // Add print shop markers for nearby shops
-      addMarkersToMap(nearbyShops)
-    })
+    try {
+      // Use user location or default to Ottawa coordinates
+      const initialLng = userLocation?.lng || defaultLng
+      const initialLat = userLocation?.lat || defaultLat
 
-    // Add minimal navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl({
-      showCompass: false,
-      showZoom: true
-    }), 'top-right')
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
+        center: [initialLng, initialLat],
+        zoom: 11,
+        interactive: true
+      })
+
+      map.current.on('load', () => {
+        setMapLoading(false)
+        setMapError(false)
+        
+        // Add user location marker if available
+        if (userLocation && map.current) {
+          const userMarkerEl = document.createElement('div')
+          userMarkerEl.innerHTML = `
+            <div class="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
+          `
+          
+          new mapboxgl.Marker(userMarkerEl)
+            .setLngLat([userLocation.lng, userLocation.lat])
+            .addTo(map.current)
+        }
+
+        // Add print shop markers for nearby shops
+        addMarkersToMap(nearbyShops)
+      })
+
+      map.current.on('error', (e) => {
+        console.error('Mapbox error:', e)
+        setMapError(true)
+        setMapLoading(false)
+      })
+
+      // Add minimal navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl({
+        showCompass: false,
+        showZoom: true
+      }), 'top-right')
+
+    } catch (error) {
+      console.error('Map initialization error:', error)
+      setMapError(true)
+      setMapLoading(false)
+    }
 
     return () => {
       if (map.current) {
@@ -190,11 +217,11 @@ export default function Hero() {
         map.current = null
       }
     }
-  }, [userLocation, resolvedTheme, nearbyShops])
+  }, [userLocation, resolvedTheme, nearbyShops, hasMapboxToken])
 
   // Update map style when theme changes
   useEffect(() => {
-    if (map.current && !mapLoading) {
+    if (map.current && !mapLoading && !mapError) {
       const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
       map.current.setStyle(newStyle)
       
@@ -228,7 +255,7 @@ export default function Hero() {
               <div ref={mapContainer} className="w-full h-full" />
 
               {/* Loading overlay */}
-              {mapLoading && (
+              {mapLoading && !mapError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                   <div className="text-center p-6">
                     <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3 animate-pulse" />
@@ -242,12 +269,32 @@ export default function Hero() {
                 </div>
               )}
 
-              {/* Print Shop Stats Overlay */}
-              <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
-                <div className="text-2xl font-bold text-accent-300 mb-1">{nearbyShops.length}</div>
-                <div className="text-xs text-gray-300">Within 50km of {userCity}</div>
-              </div>
+              {/* Error overlay - No Mapbox Token */}
+              {mapError && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
+                  <div className="text-center p-6">
+                    <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Map Preview
+                    </h3>
+                    <p className="text-gray-200 text-sm mb-2">
+                      Interactive map requires setup
+                    </p>
+                    <p className="text-gray-300 text-xs">
+                      Print shops available below
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Print Shop Stats Overlay - Only show if not in error state */}
+              {!mapError && (
+                <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                  <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
+                  <div className="text-2xl font-bold text-accent-300 mb-1">{nearbyShops.length}</div>
+                  <div className="text-xs text-gray-300">Within 50km of {userCity}</div>
+                </div>
+              )}
             </div>
 
             {/* Mini Print Shops List */}
@@ -260,7 +307,7 @@ export default function Hero() {
                       className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
                       onClick={() => {
                         setSelectedShop(selectedShop?.id === shop.id ? null : shop)
-                        if (map.current) {
+                        if (map.current && !mapError) {
                           map.current.flyTo({
                             center: [shop.lng, shop.lat],
                             zoom: 13,

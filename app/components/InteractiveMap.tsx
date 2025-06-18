@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { MapPin, Loader, Search, Filter } from 'lucide-react'
+import { MapPin, Loader, Search, Filter, AlertCircle } from 'lucide-react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { mockPrintShops, type PrintShop } from '../data/printShops'
@@ -18,11 +18,16 @@ export default function InteractiveMap() {
   const [lat, setLat] = useState(45.4215)
   const [zoom, setZoom] = useState(11)
   const [loading, setLoading] = useState(true)
+  const [mapError, setMapError] = useState(false)
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [userCity, setUserCity] = useState<string>('Ottawa, ON, Canada')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const { theme, resolvedTheme } = useTheme()
+
+  // Check if Mapbox token is available
+  const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN && 
+                        process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN !== ''
 
   // Reverse geocoding function to get city from coordinates
   const getCityFromCoordinates = async (latitude: number, longitude: number) => {
@@ -114,6 +119,8 @@ export default function InteractiveMap() {
 
   // Add markers to map
   const addMarkersToMap = (shops: PrintShop[]) => {
+    if (!map.current) return
+    
     // Clear existing markers
     markersRef.current.forEach(marker => marker.remove())
     markersRef.current = []
@@ -138,68 +145,88 @@ export default function InteractiveMap() {
 
   // Initialize map
   useEffect(() => {
-    if (map.current || !mapContainer.current) return // Initialize map only once
+    if (map.current || !mapContainer.current || !hasMapboxToken) {
+      if (!hasMapboxToken) {
+        setMapError(true)
+        setLoading(false)
+      }
+      return
+    }
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
-      center: [lng, lat],
-      zoom: zoom,
-      // Enable full interactivity - copied from Hero component
-      interactive: true,
-      dragPan: true,
-      dragRotate: true,
-      scrollZoom: true,
-      touchZoomRotate: true,
-      doubleClickZoom: true,
-      keyboard: true,
-      // Remove any restrictions
-      maxBounds: undefined,
-      minZoom: 0,
-      maxZoom: 24
-    })
+    try {
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
+        center: [lng, lat],
+        zoom: zoom,
+        // Enable full interactivity - copied from Hero component
+        interactive: true,
+        dragPan: true,
+        dragRotate: true,
+        scrollZoom: true,
+        touchZoomRotate: true,
+        doubleClickZoom: true,
+        keyboard: true,
+        // Remove any restrictions
+        maxBounds: undefined,
+        minZoom: 0,
+        maxZoom: 24
+      })
 
-    map.current.on('load', () => {
-      setLoading(false)
-      
-      // Add user location marker if available
-      if (userLocation) {
-        const userMarkerEl = document.createElement('div')
-        userMarkerEl.innerHTML = `
-          <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
-        `
+      map.current.on('load', () => {
+        setLoading(false)
+        setMapError(false)
         
-        new mapboxgl.Marker(userMarkerEl)
-          .setLngLat([userLocation.lng, userLocation.lat])
-          .addTo(map.current!)
-      }
+        // Add user location marker if available
+        if (userLocation && map.current) {
+          const userMarkerEl = document.createElement('div')
+          userMarkerEl.innerHTML = `
+            <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
+          `
+          
+          new mapboxgl.Marker(userMarkerEl)
+            .setLngLat([userLocation.lng, userLocation.lat])
+            .addTo(map.current)
+        }
 
-      // Add print shop markers
-      addMarkersToMap(mockPrintShops)
-    })
+        // Add print shop markers
+        addMarkersToMap(filteredShops)
+      })
 
-    map.current.on('move', () => {
-      if (map.current) {
-        setLng(parseFloat(map.current.getCenter().lng.toFixed(4)))
-        setLat(parseFloat(map.current.getCenter().lat.toFixed(4)))
-        setZoom(parseFloat(map.current.getZoom().toFixed(2)))
-      }
-    })
+      map.current.on('error', (e) => {
+        console.error('Mapbox error:', e)
+        setMapError(true)
+        setLoading(false)
+      })
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
-    
-    // Add geolocate control
-    map.current.addControl(
-      new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true
-        },
-        trackUserLocation: true,
-        showUserHeading: true
-      }),
-      'top-right'
-    )
+      map.current.on('move', () => {
+        if (map.current) {
+          setLng(parseFloat(map.current.getCenter().lng.toFixed(4)))
+          setLat(parseFloat(map.current.getCenter().lat.toFixed(4)))
+          setZoom(parseFloat(map.current.getZoom().toFixed(2)))
+        }
+      })
+
+      // Add navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
+      
+      // Add geolocate control
+      map.current.addControl(
+        new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true
+          },
+          trackUserLocation: true,
+          showUserHeading: true
+        }),
+        'top-right'
+      )
+
+    } catch (error) {
+      console.error('Map initialization error:', error)
+      setMapError(true)
+      setLoading(false)
+    }
 
     return () => {
       if (map.current) {
@@ -207,11 +234,11 @@ export default function InteractiveMap() {
         map.current = null
       }
     }
-  }, [lng, lat, zoom, userLocation, resolvedTheme])
+  }, [lng, lat, zoom, userLocation, resolvedTheme, hasMapboxToken])
 
   // Update map style when theme changes
   useEffect(() => {
-    if (map.current && !loading) {
+    if (map.current && !loading && !mapError) {
       const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
       map.current.setStyle(newStyle)
       
@@ -224,14 +251,14 @@ export default function InteractiveMap() {
 
   // Update map center when user location changes
   useEffect(() => {
-    if (map.current && userLocation && !loading) {
+    if (map.current && userLocation && !loading && !mapError) {
       map.current.flyTo({
         center: [userLocation.lng, userLocation.lat],
         zoom: 12,
         duration: 2000
       })
     }
-  }, [userLocation, loading])
+  }, [userLocation, loading, mapError])
 
   const filteredShops = mockPrintShops.filter(shop =>
     shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -240,10 +267,10 @@ export default function InteractiveMap() {
 
   // Update markers when search changes
   useEffect(() => {
-    if (map.current && !loading) {
+    if (map.current && !loading && !mapError) {
       addMarkersToMap(filteredShops)
     }
-  }, [searchTerm, loading])
+  }, [searchTerm, loading, mapError])
 
   return (
     <section id="map" className="py-20 bg-gray-50 dark:bg-gray-900">
@@ -281,7 +308,8 @@ export default function InteractiveMap() {
 
           {/* Map Container */}
           <div className="relative h-96 md:h-[500px]">
-            {loading && (
+            {/* Loading State */}
+            {loading && !mapError && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 z-10">
                 <div className="text-center">
                   <Loader className="w-8 h-8 animate-spin text-primary-600 mx-auto mb-4" />
@@ -289,20 +317,44 @@ export default function InteractiveMap() {
                 </div>
               </div>
             )}
+
+            {/* Error State - No Mapbox Token */}
+            {mapError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 z-10">
+                <div className="text-center p-8 max-w-md">
+                  <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    Map Temporarily Unavailable
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                    The interactive map requires a Mapbox access token to display. 
+                    You can still browse our print shop directory below.
+                  </p>
+                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                      <strong>For developers:</strong> Add your Mapbox token to the environment variables to enable the map.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             
+            {/* Map Container */}
             <div ref={mapContainer} className="w-full h-full" />
 
-            {/* Map Info Overlay */}
-            <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg max-w-xs z-10">
-              <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Print Shops Found</div>
-              <div className="text-2xl font-bold text-primary-600 mb-2">{filteredShops.length}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                {searchTerm ? `Filtered by "${searchTerm}"` : 'Across Canada'}
+            {/* Map Info Overlay - Only show if map is working */}
+            {!mapError && (
+              <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg max-w-xs z-10">
+                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Print Shops Found</div>
+                <div className="text-2xl font-bold text-primary-600 mb-2">{filteredShops.length}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  {searchTerm ? `Filtered by "${searchTerm}"` : 'Across Canada'}
+                </div>
+                <div className="text-xs text-primary-600 dark:text-primary-400">
+                  Near {userCity}
+                </div>
               </div>
-              <div className="text-xs text-primary-600 dark:text-primary-400">
-                Near {userCity}
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Enhanced Print Shops List */}
@@ -327,7 +379,7 @@ export default function InteractiveMap() {
                   }`}
                   onClick={() => {
                     setSelectedShop(selectedShop?.id === shop.id ? null : shop)
-                    if (map.current) {
+                    if (map.current && !mapError) {
                       map.current.flyTo({
                         center: [shop.lng, shop.lat],
                         zoom: 14,
