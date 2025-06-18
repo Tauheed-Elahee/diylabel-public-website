@@ -6,6 +6,7 @@ import { MapPin, Loader, Search, Filter, AlertCircle } from 'lucide-react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { mockPrintShops, type PrintShop } from '../data/printShops'
+import { calculateDistance } from '../utils/distance'
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -23,6 +24,7 @@ export default function InteractiveMap() {
   const [userCity, setUserCity] = useState<string>('Ottawa, ON, Canada')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
+  const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'name'>('distance')
   const { theme, resolvedTheme } = useTheme()
 
   // Check if Mapbox token is available
@@ -190,7 +192,7 @@ export default function InteractiveMap() {
         }
 
         // Add print shop markers
-        addMarkersToMap(filteredShops)
+        addMarkersToMap(sortedAndFilteredShops)
       })
 
       map.current.on('error', (e) => {
@@ -244,7 +246,7 @@ export default function InteractiveMap() {
       
       map.current.once('styledata', () => {
         // Re-add markers after style change
-        addMarkersToMap(filteredShops)
+        addMarkersToMap(sortedAndFilteredShops)
       })
     }
   }, [resolvedTheme])
@@ -260,17 +262,43 @@ export default function InteractiveMap() {
     }
   }, [userLocation, loading, mapError])
 
+  // Filter shops by search term
   const filteredShops = mockPrintShops.filter(shop =>
     shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     shop.specialty.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Update markers when search changes
+  // Sort shops based on selected criteria
+  const sortedAndFilteredShops = [...filteredShops].sort((a, b) => {
+    switch (sortBy) {
+      case 'distance':
+        if (!userLocation) return 0
+        const distanceA = calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng)
+        const distanceB = calculateDistance(userLocation.lat, userLocation.lng, b.lat, b.lng)
+        return distanceA - distanceB
+      
+      case 'rating':
+        return b.rating - a.rating // Higher rating first
+      
+      case 'name':
+        return a.name.localeCompare(b.name)
+      
+      default:
+        return 0
+    }
+  })
+
+  // Update markers when search or sort changes
   useEffect(() => {
     if (map.current && !loading && !mapError) {
-      addMarkersToMap(filteredShops)
+      addMarkersToMap(sortedAndFilteredShops)
     }
-  }, [searchTerm, loading, mapError])
+  }, [searchTerm, sortBy, loading, mapError, userLocation])
+
+  // Handle sort change
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(event.target.value as 'distance' | 'rating' | 'name')
+  }
 
   return (
     <section id="map" className="py-20 bg-gray-50 dark:bg-gray-900">
@@ -346,7 +374,7 @@ export default function InteractiveMap() {
             {!mapError && (
               <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg max-w-xs z-10">
                 <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Print Shops Found</div>
-                <div className="text-2xl font-bold text-primary-600 mb-2">{filteredShops.length}</div>
+                <div className="text-2xl font-bold text-primary-600 mb-2">{sortedAndFilteredShops.length}</div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                   {searchTerm ? `Filtered by "${searchTerm}"` : 'Across Canada'}
                 </div>
@@ -361,79 +389,95 @@ export default function InteractiveMap() {
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {searchTerm ? `Search Results (${filteredShops.length})` : `Print Shops Across Canada (${filteredShops.length})`}
+                {searchTerm ? `Search Results (${sortedAndFilteredShops.length})` : `Print Shops Across Canada (${sortedAndFilteredShops.length})`}
               </h3>
-              <select className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
-                <option>Sort by Distance</option>
-                <option>Sort by Rating</option>
-                <option>Sort by Name</option>
+              <select 
+                value={sortBy}
+                onChange={handleSortChange}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="distance">Sort by Distance</option>
+                <option value="rating">Sort by Rating</option>
+                <option value="name">Sort by Name</option>
               </select>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredShops.map((shop) => (
-                <div 
-                  key={shop.id}
-                  className={`bg-gray-50 dark:bg-gray-700 rounded-lg p-6 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all cursor-pointer border-2 ${
-                    selectedShop?.id === shop.id ? 'border-primary-500' : 'border-transparent'
-                  }`}
-                  onClick={() => {
-                    setSelectedShop(selectedShop?.id === shop.id ? null : shop)
-                    if (map.current && !mapError) {
-                      map.current.flyTo({
-                        center: [shop.lng, shop.lat],
-                        zoom: 14,
-                        duration: 1000
-                      })
-                    }
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-start space-x-3">
-                      <MapPin className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-white">
-                          {shop.name}
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                          {shop.address}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-yellow-500">
-                      <span className="text-sm font-medium">{shop.rating}</span>
-                      <span className="ml-1">★</span>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-3">
-                    <span className="inline-block bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-xs px-2 py-1 rounded-full">
-                      {shop.specialty}
-                    </span>
-                  </div>
+              {sortedAndFilteredShops.map((shop) => {
+                // Calculate distance for display
+                const distance = userLocation 
+                  ? calculateDistance(userLocation.lat, userLocation.lng, shop.lat, shop.lng)
+                  : null
 
-                  {selectedShop?.id === shop.id && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                return (
+                  <div 
+                    key={shop.id}
+                    className={`bg-gray-50 dark:bg-gray-700 rounded-lg p-6 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all cursor-pointer border-2 ${
+                      selectedShop?.id === shop.id ? 'border-primary-500' : 'border-transparent'
+                    }`}
+                    onClick={() => {
+                      setSelectedShop(selectedShop?.id === shop.id ? null : shop)
+                      if (map.current && !mapError) {
+                        map.current.flyTo({
+                          center: [shop.lng, shop.lat],
+                          zoom: 14,
+                          duration: 1000
+                        })
+                      }
+                    }}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start space-x-3">
+                        <MapPin className="w-5 h-5 text-primary-600 mt-1 flex-shrink-0" />
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400">Delivery:</span>
-                          <span className="ml-1 text-gray-900 dark:text-white">2-3 days</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500 dark:text-gray-400">Min Order:</span>
-                          <span className="ml-1 text-gray-900 dark:text-white">$25</span>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            {shop.name}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            {shop.address}
+                          </p>
+                          {distance && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {distance.toFixed(1)} km away
+                            </p>
+                          )}
                         </div>
                       </div>
-                      <button className="w-full mt-3 bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
-                        View Details
-                      </button>
+                      <div className="flex items-center text-yellow-500">
+                        <span className="text-sm font-medium">{shop.rating}</span>
+                        <span className="ml-1">★</span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))}
+                    
+                    <div className="mb-3">
+                      <span className="inline-block bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-xs px-2 py-1 rounded-full">
+                        {shop.specialty}
+                      </span>
+                    </div>
+
+                    {selectedShop?.id === shop.id && (
+                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-500 dark:text-gray-400">Delivery:</span>
+                            <span className="ml-1 text-gray-900 dark:text-white">2-3 days</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 dark:text-gray-400">Min Order:</span>
+                            <span className="ml-1 text-gray-900 dark:text-white">$25</span>
+                          </div>
+                        </div>
+                        <button className="w-full mt-3 bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                          View Details
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
 
-            {filteredShops.length === 0 && (
+            {sortedAndFilteredShops.length === 0 && (
               <div className="text-center py-12">
                 <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No print shops found</h3>
