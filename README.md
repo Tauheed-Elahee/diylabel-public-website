@@ -45,3 +45,47 @@ git clone https://github.com/DIY-Label/landing-page.git
 cd landing-page
 npm install
 npm run dev
+```
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
+```
+
+---
+
+## 🚀 Deployment to Netlify
+
+### Setting Environment Variables
+
+1. Go to your Netlify dashboard
+2. Select your site
+3. Go to **Site settings** → **Environment variables**
+4. Add the following environment variable:
+   - **Key**: `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`
+   - **Value**: Your Mapbox access token
+
+### Getting a Mapbox Token
+
+1. Sign up at [Mapbox](https://www.mapbox.com/)
+2. Go to your [Account page](https://account.mapbox.com/)
+3. Copy your **Default public token** or create a new one
+4. Add this token to both your local `.env.local` file and Netlify environment variables
+
+### Build Settings
+
+Netlify should automatically detect these settings, but verify:
+- **Build command**: `npm run build`
+- **Publish directory**: `.next`
+- **Node version**: 18.x or higher
+
+---
+
+## 📝 Notes
+
+- The map will show a fallback message if no Mapbox token is provided
+- All environment variables starting with `NEXT_PUBLIC_` are exposed to the browser
+- Make sure to keep your Mapbox token secure and don't commit it to version control
