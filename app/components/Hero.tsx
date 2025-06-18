@@ -14,16 +14,16 @@ export default function Hero() {
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const [selectedShop, setSelectedShop] = useState<any>(null)
-  const [userCity, setUserCity] = useState<string>('')
+  const [userCity, setUserCity] = useState<string>('Ottawa, ON, Canada')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
   const { resolvedTheme } = useTheme()
   
-  // Mock data for print shops
+  // Mock data for print shops - updated for Ottawa area
   const mockPrintShops = [
-    { id: 1, name: 'Local Print Co.', lat: 40.7128, lng: -74.0060, address: '123 Main St, New York, NY', specialty: 'T-Shirts & Hoodies', rating: 4.8 },
-    { id: 2, name: 'Quick Print Solutions', lat: 40.7589, lng: -73.9851, address: '456 Broadway, New York, NY', specialty: 'Business Cards & Flyers', rating: 4.9 },
-    { id: 3, name: 'Eco Print Shop', lat: 40.6892, lng: -74.0445, address: '789 Green Ave, Brooklyn, NY', specialty: 'Sustainable Materials', rating: 4.7 },
+    { id: 1, name: 'Capital Print Co.', lat: 45.4215, lng: -75.6972, address: '123 Bank St, Ottawa, ON', specialty: 'T-Shirts & Hoodies', rating: 4.8 },
+    { id: 2, name: 'Quick Print Solutions', lat: 45.4042, lng: -75.7125, address: '456 Somerset St, Ottawa, ON', specialty: 'Business Cards & Flyers', rating: 4.9 },
+    { id: 3, name: 'Eco Print Shop', lat: 45.3833, lng: -75.6833, address: '789 Rideau St, Ottawa, ON', specialty: 'Sustainable Materials', rating: 4.7 },
   ]
 
   // Reverse geocoding function to get city from coordinates
@@ -42,11 +42,11 @@ export default function Hero() {
       } else if (data.principalSubdivision) {
         return data.principalSubdivision
       } else {
-        return ''
+        return 'Ottawa, ON, Canada'
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error)
-      return ''
+      return 'Ottawa, ON, Canada'
     }
   }
 
@@ -65,8 +65,8 @@ export default function Hero() {
         },
         (error) => {
           console.log('Geolocation error:', error)
-          // Fallback to default
-          setUserCity('')
+          // Fallback to Ottawa
+          setUserCity('Ottawa, ON, Canada')
         }
       )
     }
@@ -133,8 +133,9 @@ export default function Hero() {
   useEffect(() => {
     if (map.current || !mapContainer.current) return
 
-    const initialLng = userLocation?.lng || -74.0060
-    const initialLat = userLocation?.lat || 40.7128
+    // Default to Ottawa coordinates
+    const initialLng = userLocation?.lng || -75.6972
+    const initialLat = userLocation?.lat || 45.4215
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -202,7 +203,7 @@ export default function Hero() {
             Your Merch,
             <br />
             <span className="text-accent-300">
-              {userCity ? `Made in ${userCity}` : 'Made Here'}
+              Made in {userCity}
             </span>
           </h1>
           
@@ -231,7 +232,7 @@ export default function Hero() {
               <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                 <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
                 <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
-                <div className="text-xs text-gray-300">Near {userCity || 'You'}</div>
+                <div className="text-xs text-gray-300">Near {userCity}</div>
               </div>
             </div>
 

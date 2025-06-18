@@ -22,11 +22,11 @@ export default function Footer() {
               </div>
               <div className="flex items-center text-gray-300">
                 <Phone className="w-5 h-5 mr-3 text-primary-400" />
-                <span>+1 (555) 123-4567</span>
+                <span>+1 (613) 555-0123</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <MapPin className="w-5 h-5 mr-3 text-primary-400" />
-                <span>San Francisco, CA</span>
+                <span>Ottawa, ON, Canada</span>
               </div>
             </div>
           </div>

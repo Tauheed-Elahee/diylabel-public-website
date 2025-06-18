@@ -9,26 +9,26 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
 
-// Mock data for print shops
+// Mock data for print shops - updated for Ottawa area
 const mockPrintShops = [
-  { id: 1, name: 'Local Print Co.', lat: 40.7128, lng: -74.0060, address: '123 Main St, New York, NY', specialty: 'T-Shirts & Hoodies', rating: 4.8 },
-  { id: 2, name: 'Quick Print Solutions', lat: 40.7589, lng: -73.9851, address: '456 Broadway, New York, NY', specialty: 'Business Cards & Flyers', rating: 4.9 },
-  { id: 3, name: 'Eco Print Shop', lat: 40.6892, lng: -74.0445, address: '789 Green Ave, Brooklyn, NY', specialty: 'Sustainable Materials', rating: 4.7 },
-  { id: 4, name: 'Creative Prints', lat: 40.7831, lng: -73.9712, address: '321 Art St, Manhattan, NY', specialty: 'Custom Designs', rating: 4.6 },
-  { id: 5, name: 'Neighborhood Printing', lat: 40.6782, lng: -73.9442, address: '654 Local Rd, Queens, NY', specialty: 'Large Format', rating: 4.8 },
-  { id: 6, name: 'Artisan Press', lat: 40.7505, lng: -73.9934, address: '987 Craft Ave, Manhattan, NY', specialty: 'Premium Quality', rating: 4.9 },
+  { id: 1, name: 'Capital Print Co.', lat: 45.4215, lng: -75.6972, address: '123 Bank St, Ottawa, ON', specialty: 'T-Shirts & Hoodies', rating: 4.8 },
+  { id: 2, name: 'Quick Print Solutions', lat: 45.4042, lng: -75.7125, address: '456 Somerset St, Ottawa, ON', specialty: 'Business Cards & Flyers', rating: 4.9 },
+  { id: 3, name: 'Eco Print Shop', lat: 45.3833, lng: -75.6833, address: '789 Rideau St, Ottawa, ON', specialty: 'Sustainable Materials', rating: 4.7 },
+  { id: 4, name: 'Creative Prints', lat: 45.4111, lng: -75.6980, address: '321 Sparks St, Ottawa, ON', specialty: 'Custom Designs', rating: 4.6 },
+  { id: 5, name: 'Neighborhood Printing', lat: 45.3755, lng: -75.7178, address: '654 Baseline Rd, Ottawa, ON', specialty: 'Large Format', rating: 4.8 },
+  { id: 6, name: 'Artisan Press', lat: 45.4298, lng: -75.6890, address: '987 Elgin St, Ottawa, ON', specialty: 'Premium Quality', rating: 4.9 },
 ]
 
 export default function InteractiveMap() {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
-  const [lng, setLng] = useState(-74.0060)
-  const [lat, setLat] = useState(40.7128)
+  const [lng, setLng] = useState(-75.6972)
+  const [lat, setLat] = useState(45.4215)
   const [zoom, setZoom] = useState(11)
   const [loading, setLoading] = useState(true)
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
-  const [userCity, setUserCity] = useState<string>('New York, NY')
+  const [userCity, setUserCity] = useState<string>('Ottawa, ON, Canada')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<any>(null)
   const { theme, resolvedTheme } = useTheme()
@@ -48,11 +48,11 @@ export default function InteractiveMap() {
       } else if (data.principalSubdivision && data.countryName) {
         return `${data.principalSubdivision}, ${data.countryName}`
       } else {
-        return 'Unknown Location'
+        return 'Ottawa, ON, Canada'
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error)
-      return 'Location unavailable'
+      return 'Ottawa, ON, Canada'
     }
   }
 
@@ -73,8 +73,8 @@ export default function InteractiveMap() {
         },
         (error) => {
           console.log('Geolocation error:', error)
-          // Fallback to NYC coordinates and city
-          setUserCity('New York, NY')
+          // Fallback to Ottawa coordinates and city
+          setUserCity('Ottawa, ON, Canada')
         }
       )
     }
