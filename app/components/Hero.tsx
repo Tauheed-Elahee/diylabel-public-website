@@ -14,7 +14,7 @@ export default function Hero() {
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const [selectedShop, setSelectedShop] = useState<any>(null)
-  const [userCity, setUserCity] = useState<string>('Ottawa, ON, Canada')
+  const [userCity, setUserCity] = useState<string>('Ottawa')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
   const { resolvedTheme } = useTheme()
@@ -42,11 +42,11 @@ export default function Hero() {
       } else if (data.principalSubdivision) {
         return data.principalSubdivision
       } else {
-        return 'Ottawa, ON, Canada'
+        return 'Ottawa'
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error)
-      return 'Ottawa, ON, Canada'
+      return 'Ottawa'
     }
   }
 
@@ -66,7 +66,7 @@ export default function Hero() {
         (error) => {
           console.log('Geolocation error:', error)
           // Fallback to Ottawa
-          setUserCity('Ottawa, ON, Canada')
+          setUserCity('Ottawa')
         }
       )
     }
