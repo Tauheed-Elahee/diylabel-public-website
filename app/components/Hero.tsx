@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTheme } from 'next-themes'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import { mockPrintShops, type PrintShop } from '../data/printShops'
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -13,18 +14,14 @@ export default function Hero() {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
-  const [selectedShop, setSelectedShop] = useState<any>(null)
+  const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const [userCity, setUserCity] = useState<string>('Ottawa')
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
   const { resolvedTheme } = useTheme()
   
-  // Mock data for print shops - sample from major Canadian cities
-  const mockPrintShops = [
-    { id: 1, name: 'Capital Print Co.', lat: 45.4215, lng: -75.6972, address: '123 Bank St, Ottawa, ON', specialty: 'T-Shirts & Hoodies', rating: 4.8 },
-    { id: 2, name: 'Toronto Print Hub', lat: 43.6532, lng: -79.3832, address: '123 Queen St W, Toronto, ON', specialty: 'Business Cards & Flyers', rating: 4.9 },
-    { id: 3, name: 'Impression Montréal', lat: 45.5017, lng: -73.5673, address: '321 Rue Saint-Denis, Montréal, QC', specialty: 'Sustainable Materials', rating: 4.7 },
-  ]
+  // Sample of print shops for hero display (first 3)
+  const heroShops = mockPrintShops.slice(0, 3)
 
   // Reverse geocoding function to get city from coordinates
   const getCityFromCoordinates = async (latitude: number, longitude: number) => {
@@ -73,7 +70,7 @@ export default function Hero() {
   }, [])
 
   // Create custom marker element
-  const createMarkerElement = (shop: any) => {
+  const createMarkerElement = (shop: PrintShop) => {
     const el = document.createElement('div')
     el.className = 'custom-marker'
     el.innerHTML = `
@@ -92,7 +89,7 @@ export default function Hero() {
   }
 
   // Create popup content
-  const createPopupContent = (shop: any) => {
+  const createPopupContent = (shop: PrintShop) => {
     return `
       <div class="p-3 min-w-[200px]">
         <h3 class="font-semibold text-gray-900 dark:text-white mb-1 text-sm">${shop.name}</h3>
@@ -106,7 +103,7 @@ export default function Hero() {
   }
 
   // Add markers to map
-  const addMarkersToMap = (shops: any[]) => {
+  const addMarkersToMap = (shops: PrintShop[]) => {
     // Clear existing markers
     markersRef.current.forEach(marker => marker.remove())
     markersRef.current = []
@@ -161,7 +158,7 @@ export default function Hero() {
       }
 
       // Add print shop markers
-      addMarkersToMap(mockPrintShops)
+      addMarkersToMap(heroShops)
     })
 
     // Add minimal navigation controls
@@ -186,7 +183,7 @@ export default function Hero() {
       
       map.current.once('styledata', () => {
         // Re-add markers after style change
-        addMarkersToMap(mockPrintShops)
+        addMarkersToMap(heroShops)
       })
     }
   }, [resolvedTheme])
@@ -231,7 +228,7 @@ export default function Hero() {
               {/* Print Shop Stats Overlay */}
               <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                 <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
-                <div className="text-2xl font-bold text-accent-300 mb-1">{mockPrintShops.length}</div>
+                <div className="text-2xl font-bold text-accent-300 mb-1">{heroShops.length}</div>
                 <div className="text-xs text-gray-300">Near {userCity}</div>
               </div>
             </div>
@@ -239,7 +236,7 @@ export default function Hero() {
             {/* Mini Print Shops List */}
             <div className="p-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {mockPrintShops.slice(0, 3).map((shop) => (
+                {heroShops.map((shop) => (
                   <div 
                     key={shop.id}
                     className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
