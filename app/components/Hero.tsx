@@ -19,11 +19,11 @@ export default function Hero() {
   const [mapLoading, setMapLoading] = useState(true)
   const { resolvedTheme } = useTheme()
   
-  // Mock data for print shops - updated for Ottawa area
+  // Mock data for print shops - sample from major Canadian cities
   const mockPrintShops = [
     { id: 1, name: 'Capital Print Co.', lat: 45.4215, lng: -75.6972, address: '123 Bank St, Ottawa, ON', specialty: 'T-Shirts & Hoodies', rating: 4.8 },
-    { id: 2, name: 'Quick Print Solutions', lat: 45.4042, lng: -75.7125, address: '456 Somerset St, Ottawa, ON', specialty: 'Business Cards & Flyers', rating: 4.9 },
-    { id: 3, name: 'Eco Print Shop', lat: 45.3833, lng: -75.6833, address: '789 Rideau St, Ottawa, ON', specialty: 'Sustainable Materials', rating: 4.7 },
+    { id: 2, name: 'Toronto Print Hub', lat: 43.6532, lng: -79.3832, address: '123 Queen St W, Toronto, ON', specialty: 'Business Cards & Flyers', rating: 4.9 },
+    { id: 3, name: 'Impression Montréal', lat: 45.5017, lng: -73.5673, address: '321 Rue Saint-Denis, Montréal, QC', specialty: 'Sustainable Materials', rating: 4.7 },
   ]
 
   // Reverse geocoding function to get city from coordinates
