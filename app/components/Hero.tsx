@@ -8,8 +8,11 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { type PrintShop } from '../../lib/supabase'
 import { usePrintShops } from '../hooks/usePrintShops'
 
-// Set Mapbox access token
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
+// Set Mapbox access token with validation
+const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
+if (mapboxToken && mapboxToken !== '') {
+  mapboxgl.accessToken = mapboxToken
+}
 
 export default function Hero() {
   const mapContainer = useRef<HTMLDivElement>(null)
@@ -35,9 +38,10 @@ export default function Hero() {
   // Limit to 3 shops for hero display
   const heroShops = nearbyShops.slice(0, 3)
 
-  // Check if Mapbox token is available
-  const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN && 
-                        process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN !== ''
+  // Check if Mapbox token is available and valid
+  const hasValidMapboxToken = !!mapboxToken && 
+                              mapboxToken !== '' && 
+                              mapboxToken.startsWith('pk.')
 
   // Scroll to Features section
   const scrollToFeatures = () => {
@@ -171,8 +175,9 @@ export default function Hero() {
 
   // Initialize map
   useEffect(() => {
-    if (map.current || !mapContainer.current || !hasMapboxToken) {
-      if (!hasMapboxToken) {
+    // Early return if map already exists, container not ready, or no valid token
+    if (map.current || !mapContainer.current || !hasValidMapboxToken) {
+      if (!hasValidMapboxToken) {
         setMapError(true)
         setMapLoading(false)
       }
@@ -184,45 +189,68 @@ export default function Hero() {
       const initialLng = userLocation?.lng || defaultLng
       const initialLat = userLocation?.lat || defaultLat
 
+      // Create map with error handling
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
         center: [initialLng, initialLat],
         zoom: 11,
-        interactive: true
+        interactive: true,
+        // Add additional options to prevent errors
+        attributionControl: false,
+        logoPosition: 'bottom-right'
       })
 
+      // Handle successful load
       map.current.on('load', () => {
         setMapLoading(false)
         setMapError(false)
         
         // Add user location marker if available
         if (userLocation && map.current) {
-          const userMarkerEl = document.createElement('div')
-          userMarkerEl.innerHTML = `
-            <div class="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
-          `
-          
-          new mapboxgl.Marker(userMarkerEl)
-            .setLngLat([userLocation.lng, userLocation.lat])
-            .addTo(map.current)
+          try {
+            const userMarkerEl = document.createElement('div')
+            userMarkerEl.innerHTML = `
+              <div class="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
+            `
+            
+            new mapboxgl.Marker(userMarkerEl)
+              .setLngLat([userLocation.lng, userLocation.lat])
+              .addTo(map.current)
+          } catch (markerError) {
+            console.warn('Error adding user marker:', markerError)
+          }
         }
 
         // Add print shop markers for nearby shops
-        addMarkersToMap(heroShops)
+        try {
+          addMarkersToMap(heroShops)
+        } catch (markersError) {
+          console.warn('Error adding shop markers:', markersError)
+        }
       })
 
+      // Handle errors more gracefully
       map.current.on('error', (e) => {
         console.error('Mapbox error:', e)
         setMapError(true)
         setMapLoading(false)
       })
 
-      // Add minimal navigation controls
-      map.current.addControl(new mapboxgl.NavigationControl({
-        showCompass: false,
-        showZoom: true
-      }), 'top-right')
+      // Handle style errors
+      map.current.on('styleimagemissing', (e) => {
+        console.warn('Style image missing:', e)
+      })
+
+      // Add minimal navigation controls with error handling
+      try {
+        map.current.addControl(new mapboxgl.NavigationControl({
+          showCompass: false,
+          showZoom: true
+        }), 'top-right')
+      } catch (controlError) {
+        console.warn('Error adding navigation controls:', controlError)
+      }
 
     } catch (error) {
       console.error('Map initialization error:', error)
@@ -232,22 +260,34 @@ export default function Hero() {
 
     return () => {
       if (map.current) {
-        map.current.remove()
+        try {
+          map.current.remove()
+        } catch (removeError) {
+          console.warn('Error removing map:', removeError)
+        }
         map.current = null
       }
     }
-  }, [userLocation, resolvedTheme, heroShops, hasMapboxToken])
+  }, [userLocation, resolvedTheme, heroShops, hasValidMapboxToken])
 
   // Update map style when theme changes
   useEffect(() => {
-    if (map.current && !mapLoading && !mapError) {
-      const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
-      map.current.setStyle(newStyle)
-      
-      map.current.once('styledata', () => {
-        // Re-add markers after style change
-        addMarkersToMap(heroShops)
-      })
+    if (map.current && !mapLoading && !mapError && hasValidMapboxToken) {
+      try {
+        const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
+        map.current.setStyle(newStyle)
+        
+        map.current.once('styledata', () => {
+          // Re-add markers after style change
+          try {
+            addMarkersToMap(heroShops)
+          } catch (markersError) {
+            console.warn('Error re-adding markers after style change:', markersError)
+          }
+        })
+      } catch (styleError) {
+        console.warn('Error updating map style:', styleError)
+      }
     }
   }, [resolvedTheme, heroShops])
 
@@ -288,7 +328,7 @@ export default function Hero() {
                 </div>
               )}
 
-              {/* Error overlay - No Mapbox Token */}
+              {/* Error overlay - No Mapbox Token or Map Error */}
               {mapError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                   <div className="text-center p-6">
@@ -326,12 +366,16 @@ export default function Hero() {
                       className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
                       onClick={() => {
                         setSelectedShop(selectedShop?.id === shop.id ? null : shop)
-                        if (map.current && !mapError) {
-                          map.current.flyTo({
-                            center: [shop.lng, shop.lat],
-                            zoom: 13,
-                            duration: 1000
-                          })
+                        if (map.current && !mapError && hasValidMapboxToken) {
+                          try {
+                            map.current.flyTo({
+                              center: [shop.lng, shop.lat],
+                              zoom: 13,
+                              duration: 1000
+                            })
+                          } catch (flyError) {
+                            console.warn('Error flying to shop location:', flyError)
+                          }
                         }
                       }}
                     >

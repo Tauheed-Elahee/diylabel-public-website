@@ -10,8 +10,11 @@ import { calculateDistance } from '../utils/distance'
 import { extractCityFromAddress } from '../utils/searchUtils'
 import { usePrintShops } from '../hooks/usePrintShops'
 
-// Set Mapbox access token
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
+// Set Mapbox access token with validation
+const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
+if (mapboxToken && mapboxToken !== '') {
+  mapboxgl.accessToken = mapboxToken
+}
 
 export default function InteractiveMap() {
   const mapContainer = useRef<HTMLDivElement>(null)
@@ -38,9 +41,10 @@ export default function InteractiveMap() {
     radiusKm: 50
   })
 
-  // Check if Mapbox token is available
-  const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN && 
-                        process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN !== ''
+  // Check if Mapbox token is available and valid
+  const hasValidMapboxToken = !!mapboxToken && 
+                              mapboxToken !== '' && 
+                              mapboxToken.startsWith('pk.')
 
   // Reverse geocoding function to get city from coordinates
   const getCityFromCoordinates = async (latitude: number, longitude: number) => {
@@ -139,27 +143,32 @@ export default function InteractiveMap() {
     markersRef.current = []
 
     shops.forEach(shop => {
-      const markerElement = createMarkerElement(shop)
-      
-      const marker = new mapboxgl.Marker(markerElement)
-        .setLngLat([shop.lng, shop.lat])
-        .addTo(map.current!)
+      try {
+        const markerElement = createMarkerElement(shop)
+        
+        const marker = new mapboxgl.Marker(markerElement)
+          .setLngLat([shop.lng, shop.lat])
+          .addTo(map.current!)
 
-      const popup = new mapboxgl.Popup({
-        offset: 25,
-        closeButton: true,
-        closeOnClick: false
-      }).setHTML(createPopupContent(shop))
+        const popup = new mapboxgl.Popup({
+          offset: 25,
+          closeButton: true,
+          closeOnClick: false
+        }).setHTML(createPopupContent(shop))
 
-      marker.setPopup(popup)
-      markersRef.current.push(marker)
+        marker.setPopup(popup)
+        markersRef.current.push(marker)
+      } catch (markerError) {
+        console.warn('Error adding marker for shop:', shop.name, markerError)
+      }
     })
   }
 
   // Initialize map
   useEffect(() => {
-    if (map.current || !mapContainer.current || !hasMapboxToken) {
-      if (!hasMapboxToken) {
+    // Early return if map already exists, container not ready, or no valid token
+    if (map.current || !mapContainer.current || !hasValidMapboxToken) {
+      if (!hasValidMapboxToken) {
         setMapError(true)
         setMapLoading(false)
       }
@@ -181,7 +190,10 @@ export default function InteractiveMap() {
         keyboard: true,
         maxBounds: undefined,
         minZoom: 0,
-        maxZoom: 24
+        maxZoom: 24,
+        // Add additional options to prevent errors
+        attributionControl: false,
+        logoPosition: 'bottom-right'
       })
 
       map.current.on('load', () => {
@@ -190,24 +202,37 @@ export default function InteractiveMap() {
         
         // Add user location marker if available
         if (userLocation && map.current) {
-          const userMarkerEl = document.createElement('div')
-          userMarkerEl.innerHTML = `
-            <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
-          `
-          
-          new mapboxgl.Marker(userMarkerEl)
-            .setLngLat([userLocation.lng, userLocation.lat])
-            .addTo(map.current)
+          try {
+            const userMarkerEl = document.createElement('div')
+            userMarkerEl.innerHTML = `
+              <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
+            `
+            
+            new mapboxgl.Marker(userMarkerEl)
+              .setLngLat([userLocation.lng, userLocation.lat])
+              .addTo(map.current)
+          } catch (userMarkerError) {
+            console.warn('Error adding user marker:', userMarkerError)
+          }
         }
 
         // Add print shop markers
-        addMarkersToMap(displayedShops)
+        try {
+          addMarkersToMap(displayedShops)
+        } catch (markersError) {
+          console.warn('Error adding shop markers:', markersError)
+        }
       })
 
       map.current.on('error', (e) => {
         console.error('Mapbox error:', e)
         setMapError(true)
         setMapLoading(false)
+      })
+
+      // Handle style errors
+      map.current.on('styleimagemissing', (e) => {
+        console.warn('Style image missing:', e)
       })
 
       map.current.on('move', () => {
@@ -218,20 +243,24 @@ export default function InteractiveMap() {
         }
       })
 
-      // Add navigation controls
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
-      
-      // Add geolocate control
-      map.current.addControl(
-        new mapboxgl.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true
-          },
-          trackUserLocation: true,
-          showUserHeading: true
-        }),
-        'top-right'
-      )
+      // Add navigation controls with error handling
+      try {
+        map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
+        
+        // Add geolocate control
+        map.current.addControl(
+          new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true
+            },
+            trackUserLocation: true,
+            showUserHeading: true
+          }),
+          'top-right'
+        )
+      } catch (controlError) {
+        console.warn('Error adding map controls:', controlError)
+      }
 
     } catch (error) {
       console.error('Map initialization error:', error)
@@ -241,33 +270,49 @@ export default function InteractiveMap() {
 
     return () => {
       if (map.current) {
-        map.current.remove()
+        try {
+          map.current.remove()
+        } catch (removeError) {
+          console.warn('Error removing map:', removeError)
+        }
         map.current = null
       }
     }
-  }, [lng, lat, zoom, userLocation, resolvedTheme, hasMapboxToken])
+  }, [lng, lat, zoom, userLocation, resolvedTheme, hasValidMapboxToken])
 
   // Update map style when theme changes
   useEffect(() => {
-    if (map.current && !mapLoading && !mapError) {
-      const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
-      map.current.setStyle(newStyle)
-      
-      map.current.once('styledata', () => {
-        // Re-add markers after style change
-        addMarkersToMap(displayedShops)
-      })
+    if (map.current && !mapLoading && !mapError && hasValidMapboxToken) {
+      try {
+        const newStyle = resolvedTheme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
+        map.current.setStyle(newStyle)
+        
+        map.current.once('styledata', () => {
+          // Re-add markers after style change
+          try {
+            addMarkersToMap(displayedShops)
+          } catch (markersError) {
+            console.warn('Error re-adding markers after style change:', markersError)
+          }
+        })
+      } catch (styleError) {
+        console.warn('Error updating map style:', styleError)
+      }
     }
   }, [resolvedTheme])
 
   // Update map center when user location changes
   useEffect(() => {
-    if (map.current && userLocation && !mapLoading && !mapError) {
-      map.current.flyTo({
-        center: [userLocation.lng, userLocation.lat],
-        zoom: 12,
-        duration: 2000
-      })
+    if (map.current && userLocation && !mapLoading && !mapError && hasValidMapboxToken) {
+      try {
+        map.current.flyTo({
+          center: [userLocation.lng, userLocation.lat],
+          zoom: 12,
+          duration: 2000
+        })
+      } catch (flyError) {
+        console.warn('Error flying to user location:', flyError)
+      }
     }
   }, [userLocation, mapLoading, mapError])
 
@@ -276,7 +321,7 @@ export default function InteractiveMap() {
 
   // Update markers when shops change
   useEffect(() => {
-    if (map.current && !mapLoading && !mapError) {
+    if (map.current && !mapLoading && !mapError && hasValidMapboxToken) {
       addMarkersToMap(displayedShops)
     }
   }, [displayedShops, mapLoading, mapError])
@@ -456,12 +501,16 @@ export default function InteractiveMap() {
                     }`}
                     onClick={() => {
                       setSelectedShop(selectedShop?.id === shop.id ? null : shop)
-                      if (map.current && !mapError) {
-                        map.current.flyTo({
-                          center: [shop.lng, shop.lat],
-                          zoom: 14,
-                          duration: 1000
-                        })
+                      if (map.current && !mapError && hasValidMapboxToken) {
+                        try {
+                          map.current.flyTo({
+                            center: [shop.lng, shop.lat],
+                            zoom: 14,
+                            duration: 1000
+                          })
+                        } catch (flyError) {
+                          console.warn('Error flying to shop location:', flyError)
+                        }
                       }
                     }}
                   >
