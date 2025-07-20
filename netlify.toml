@@ -25,3 +25,8 @@
   from = "/api/widget-data"
   to = "/.netlify/functions/widget-data"
   status = 200
+
+[[redirects]]
+  from = "/api/geocode"
+  to = "/.netlify/functions/geocode"
+  status = 200
