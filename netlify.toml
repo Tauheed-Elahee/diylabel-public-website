@@ -1,6 +1,7 @@
 [build]
   functions = "netlify/functions"
-  publish = "public"
+  publish = ".next"
+  command = "npm run build"
 
 [functions]
   directory = "netlify/functions"
@@ -18,4 +19,9 @@
 [[redirects]]
   from = "/webhooks/orders/paid"
   to = "/.netlify/functions/shopify-order-webhook"
+  status = 200
+
+[[redirects]]
+  from = "/api/widget-data"
+  to = "/.netlify/functions/widget-data"
   status = 200
