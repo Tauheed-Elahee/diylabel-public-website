@@ -30,3 +30,8 @@
   from = "/api/geocode"
   to = "/.netlify/functions/geocode"
   status = 200
+
+[[redirects]]
+  from = "/api/checkout/diy-label"
+  to = "/.netlify/functions/checkout-order"
+  status = 200
