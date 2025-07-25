@@ -1,7 +1,6 @@
 [build]
   functions = "netlify/functions"
-  publish = ".next"
-  command = "npm run build"
+  publish = "public"
 
 [functions]
   directory = "netlify/functions"
@@ -22,11 +21,6 @@
   status = 200
 
 [[redirects]]
-  from = "/api/widget-data"
-  to = "/.netlify/functions/widget-data"
-  status = 200
-
-[[redirects]]
   from = "/api/checkout/diy-label"
   to = "/.netlify/functions/checkout-order"
   status = 200
@@ -39,4 +33,9 @@
 [[redirects]]
   from = "/api/orders"
   to = "/.netlify/functions/get-orders"
+  status = 200
+
+[[redirects]]
+  from = "/api/geocode"
+  to = "/.netlify/functions/geocode"
   status = 200

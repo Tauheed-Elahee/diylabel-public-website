@@ -20,7 +20,6 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 // Function to verify Shopify webhook signature
 function verifyShopifyWebhook(body, signature, secret) {
   if (!signature || !secret) {
-    console.log('Missing signature or secret for webhook verification');
     return false;
   }
 
@@ -35,13 +34,6 @@ function verifyShopifyWebhook(body, signature, secret) {
 }
 
 exports.handler = async (event, context) => {
-  console.log('Webhook received:', {
-    method: event.httpMethod,
-    headers: Object.keys(event.headers),
-    topic: event.headers['x-shopify-topic'],
-    shop: event.headers['x-shopify-shop-domain']
-  });
-
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -52,58 +44,30 @@ exports.handler = async (event, context) => {
   try {
     // Verify webhook signature for security
     const signature = event.headers['x-shopify-hmac-sha256'];
-    // Skip signature verification in development/testing
-    // if (shopifyApiSecret && !verifyShopifyWebhook(event.body, signature, shopifyApiSecret)) {
-    //   console.error('Invalid webhook signature');
-    //   return {
-    //     statusCode: 401,
-    //     body: 'Unauthorized - Invalid signature'
-    //   };
-    // }
+    if (shopifyApiSecret && !verifyShopifyWebhook(event.body, signature, shopifyApiSecret)) {
+      console.error('Invalid webhook signature');
+      return {
+        statusCode: 401,
+        body: 'Unauthorized - Invalid signature'
+      };
+    }
 
     const payload = JSON.parse(event.body);
     const shopDomain = event.headers['x-shopify-shop-domain'];
     const topic = event.headers['x-shopify-topic'];
 
     console.log(`Received ${topic} webhook for ${shopDomain}, Order ID: ${payload.id}`);
-    console.log('Order payload keys:', Object.keys(payload));
-    console.log('Note attributes:', payload.note_attributes);
 
     if (topic === 'orders/paid') {
       const order = payload;
 
-      // Check multiple ways for DIY Label data
+      // Check if this order has DIY Label attributes from cart
       const noteAttributes = order.note_attributes || [];
-      console.log('All note attributes:', noteAttributes);
-      
       const diyLabelEnabled = noteAttributes.find(
         attr => attr.name === 'diy_label_enabled' && attr.value === 'true'
       );
 
-      // Also check line item properties for DIY Label data
-      let hasDiyLabelProduct = false;
-      const lineItems = order.line_items || [];
-      
-      for (const item of lineItems) {
-        const properties = item.properties || [];
-        const diyLabelProperty = properties.find(prop => 
-          prop.name === 'diy_label_enabled' && prop.value === 'true'
-        );
-        if (diyLabelProperty) {
-          hasDiyLabelProduct = true;
-          console.log('Found DIY Label in line item properties:', item.id);
-          break;
-        }
-      }
-
-      console.log('DIY Label checks:', {
-        noteAttributesEnabled: !!diyLabelEnabled,
-        lineItemEnabled: hasDiyLabelProduct,
-        totalNoteAttributes: noteAttributes.length,
-        totalLineItems: lineItems.length
-      });
-
-      if (diyLabelEnabled || hasDiyLabelProduct) {
+      if (diyLabelEnabled) {
         console.log('DIY Label order detected:', order.id);
 
         // Extract DIY Label data from order attributes
@@ -123,21 +87,12 @@ exports.handler = async (event, context) => {
           attr => attr.name === 'diy_label_customer_location'
         )?.value;
 
-        console.log('Extracted DIY Label data:', {
-          printShopId,
-          printShopName,
-          printShopAddress,
-          customerLocation
-        });
-
         // Get store from database
         const { data: store } = await supabaseAdmin
           .from('shopify_stores')
           .select('id')
           .eq('shop_domain', shopDomain)
           .single();
-
-        console.log('Store lookup result:', { store, shopDomain });
 
         if (store && printShopId) {
           console.log('Creating DIY Label order for print shop:', printShopId);
@@ -178,33 +133,10 @@ exports.handler = async (event, context) => {
 
           if (orderError) {
             console.error('Error creating DIY Label order:', orderError);
-            console.error('Order error details:', {
-              code: orderError.code,
-              message: orderError.message,
-              details: orderError.details,
-              hint: orderError.hint
-            });
           } else {
             console.log(`DIY Label order created: ${diyOrder.id} for Shopify order ${order.id}`);
           }
-        } else if (!store) {
-          console.log('Store not found for shop domain:', shopDomain);
-          // Try to create the store if it doesn't exist
-          const { data: newStore, error: storeError } = await supabaseAdmin
-            .from('shopify_stores')
-            .insert({
-              shop_domain: shopDomain,
-              settings: {}
-            })
-            .select()
-            .single();
-          
-          if (storeError) {
-            console.error('Error creating store:', storeError);
-          } else {
-            console.log('Created new store:', newStore.id);
-          }
-        } else if (!printShopId) {
+        } else {
           console.log('DIY Label enabled but missing data:', {
             storeFound: !!store,
             printShopId: printShopId,
@@ -213,7 +145,8 @@ exports.handler = async (event, context) => {
         }
       } else {
         console.log('No DIY Label attributes found for order:', order.id);
-        console.log('Available note attributes:', noteAttributes.map(attr => ({ name: attr.name, value: attr.value })));
+        // Optionally process individual line items for DIY Label enabled products
+        await processLineItemsForDIYLabel(order, shopDomain);
       }
     }
 
@@ -223,10 +156,48 @@ exports.handler = async (event, context) => {
     };
   } catch (error) {
     console.error('Error processing webhook:', error);
-    console.error('Error stack:', error.stack);
     return {
       statusCode: 500,
       body: 'Internal Server Error'
     };
   }
 };
+
+// Helper function to process line items for DIY Label enabled products
+async function processLineItemsForDIYLabel(order, shopDomain) {
+  const lineItems = order.line_items || [];
+  
+  // Get store once for all line items
+  const { data: store } = await supabaseAdmin
+    .from('shopify_stores')
+    .select('id')
+    .eq('shop_domain', shopDomain)
+    .single();
+  
+  if (!store) {
+    console.log('Store not found for shop:', shopDomain);
+    return;
+  }
+
+  // Process each line item
+  for (const item of lineItems) {
+    const productId = item.product_id?.toString();
+    
+    if (productId) {
+      // Check product settings
+      const { data: productSettings } = await supabaseAdmin
+        .from('product_settings')
+        .select('*')
+        .eq('shopify_store_id', store.id)
+        .eq('shopify_product_id', productId)
+        .single();
+
+      if (productSettings?.diy_label_enabled) {
+        console.log(`DIY Label product detected: ${order.id} for product ${productId} (no cart selection)`);
+        
+        // TODO: Send email to customer for print shop selection
+        // TODO: Create pending DIY Label order awaiting print shop selection
+      }
+    }
+  }
+}
