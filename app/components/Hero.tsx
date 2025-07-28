@@ -35,8 +35,6 @@ export default function Hero() {
     radiusKm: 50
   })
 
-  // Limit to 3 shops for hero display
-  const heroShops = nearbyShops.slice(0, 3)
 
   // Check if Mapbox token is available and valid
   const hasValidMapboxToken = !!mapboxToken && 
