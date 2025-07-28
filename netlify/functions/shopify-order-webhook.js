@@ -34,27 +34,9 @@ function verifyShopifyWebhook(body, signature, secret) {
 }
 
 exports.handler = async (event, context) => {
-  // CORS headers for cross-origin requests
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Max-Age': '86400',
-  };
-
-  // Handle OPTIONS preflight request
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: corsHeaders,
-      body: ''
-    };
-  }
-
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers: corsHeaders,
       body: 'Method Not Allowed'
     };
   }
@@ -66,7 +48,6 @@ exports.handler = async (event, context) => {
       console.error('Invalid webhook signature');
       return {
         statusCode: 401,
-        headers: corsHeaders,
         body: 'Unauthorized - Invalid signature'
       };
     }

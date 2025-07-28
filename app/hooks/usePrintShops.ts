@@ -26,44 +26,6 @@ export function usePrintShops(options: UsePrintShopsOptions = {}) {
         setLoading(true)
         setError(null)
 
-        // Check if Supabase is available
-        if (!supabase) {
-          // Use mock data for preview environment
-          const mockShops: PrintShop[] = [
-            {
-              id: 1,
-              name: 'Toronto Print Hub',
-              lat: 43.6532,
-              lng: -79.3832,
-              address: '123 Queen St W, Toronto, ON',
-              specialty: 'T-Shirts & Hoodies',
-              rating: 4.8
-            },
-            {
-              id: 2,
-              name: 'Capital Print Co.',
-              lat: 45.4215,
-              lng: -75.6972,
-              address: '123 Bank St, Ottawa, ON',
-              specialty: 'Government Printing',
-              rating: 4.8
-            },
-            {
-              id: 3,
-              name: 'Granville Print Co.',
-              lat: 49.2827,
-              lng: -123.1207,
-              address: '258 Granville St, Vancouver, BC',
-              specialty: 'Sustainable Materials',
-              rating: 4.9
-            }
-          ]
-          
-          setPrintShops(mockShops)
-          setLoading(false)
-          return
-        }
-
         let shops: PrintShop[]
 
         if (searchTerm.trim()) {
