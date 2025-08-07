@@ -30,10 +30,16 @@ export default function CTA() {
 
           {/* Two simple buttons for joining */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 max-w-md mx-auto">
-            <button className="w-full sm:w-auto bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+           <button 
+             onClick={() => window.location.href = '/join'}
+             className="w-full sm:w-auto bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+           >
               Local Supplier
             </button>
-            <button className="w-full sm:w-auto bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+           <button 
+             onClick={() => window.location.href = '/join'}
+             className="w-full sm:w-auto bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+           >
               eCom Storefront
             </button>
           </div>

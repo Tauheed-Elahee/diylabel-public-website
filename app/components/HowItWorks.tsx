@@ -90,7 +90,10 @@ export default function HowItWorks() {
 
         {/* CTA */}
         <div className="text-center">
-          <button className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+         <button 
+           onClick={() => window.location.href = '/join'}
+           className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+         >
             Start Your Journey
           </button>
         </div>

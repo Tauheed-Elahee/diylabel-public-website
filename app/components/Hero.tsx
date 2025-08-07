@@ -413,7 +413,7 @@ export default function Hero() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 sm:mb-20">
             <button 
-              onClick={scrollToCTA}
+             onClick={() => window.location.href = '/join'}
               className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2"
             >
               Get Started
