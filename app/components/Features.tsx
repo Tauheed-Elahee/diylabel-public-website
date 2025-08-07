@@ -4,12 +4,6 @@ import { Leaf, MapPin, Zap, Users, Shield, TrendingUp, Store, Printer, Footprint
 
 const features = [
   {
-    icon: Leaf,
-    title: 'Zero Cost Carbon Zero',
-    description: 'Eliminate shipping costs to boost profit margins while achieving zero-carbon local delivery for maximum environmental impact.',
-    color: 'text-green-500'
-  },
-  {
     icon: Package,
     title: '2-Hour Shipping',
     description: 'Ultra-fast local delivery that delights customers and encourages repeat purchases through same-day fulfillment.',
@@ -20,6 +14,12 @@ const features = [
     title: 'Increase Local Foot Traffic',
     description: 'Increase local foot traffic for local businesses. Reduce shipping to $0.',
     color: 'text-orange-500'
+  },
+  {
+    icon: Leaf,
+    title: 'Zero Cost Carbon Zero',
+    description: 'Eliminate shipping costs to boost profit margins while achieving zero-carbon local delivery for maximum environmental impact.',
+    color: 'text-green-500'
   },
   {
     icon: TrendingUp,
