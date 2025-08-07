@@ -453,20 +453,20 @@ export default function JoinPage() {
                         <label className="flex items-center">
                           <input
                             type="checkbox"
-                            checked={formData.businessHours[day.key].closed}
+                           checked={formData.businessHours[day.key as DayKey].closed}
                             onChange={(e) => handleHoursChange(day.key as DayKey, 'closed', e.target.checked)}
                             className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                           />
                           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Closed</span>
                         </label>
                         
-                        {!formData.businessHours[day.key].closed && (
+                       {!formData.businessHours[day.key as DayKey].closed && (
                           <>
                             <div className="flex items-center gap-2">
                               <label className="text-sm text-gray-600 dark:text-gray-400">Open:</label>
                               <input
                                 type="time"
-                                value={formData.businessHours[day.key].open}
+                               value={formData.businessHours[day.key as DayKey].open}
                                 onChange={(e) => handleHoursChange(day.key as DayKey, 'open', e.target.value)}
                                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
                               />
@@ -475,7 +475,7 @@ export default function JoinPage() {
                               <label className="text-sm text-gray-600 dark:text-gray-400">Close:</label>
                               <input
                                 type="time"
-                                value={formData.businessHours[day.key].close}
+                               value={formData.businessHours[day.key as DayKey].close}
                                 onChange={(e) => handleHoursChange(day.key as DayKey, 'close', e.target.value)}
                                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
                               />
