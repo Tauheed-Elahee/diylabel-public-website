@@ -98,7 +98,7 @@ export default function JoinPage() {
             </p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               See How Print Shops Are Growing with DIY Label
-            </h1>
+            </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Watch real print shop owners share their success stories and learn how DIY Label can transform your business.
             </p>
