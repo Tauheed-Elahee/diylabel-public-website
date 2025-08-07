@@ -41,11 +41,8 @@ export default function Header() {
               <a href="#map" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium transition-colors">
                 Find Print Shops
               </a>
-              <a href="#contact" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium transition-colors">
-                Contact
-              </a>
               <a href="/join" className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                Join Network
+                Join
               </a>
             </div>
           </nav>
@@ -86,11 +83,8 @@ export default function Header() {
               <a href="#map" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 Find Print Shops
               </a>
-              <a href="#contact" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                Contact
-              </a>
               <a href="/join" className="block px-3 py-2 text-base font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors mx-3 text-center">
-                Join Network
+                Join
               </a>
             </div>
           </div>
