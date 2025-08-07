@@ -1,3 +1,5 @@
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 import JoinPage from './components/JoinPage'
 
 export const metadata = {
@@ -7,5 +9,11 @@ export const metadata = {
 }
 
 export default function Join() {
-  return <JoinPage />
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <JoinPage />
+      <Footer />
+    </div>
+  )
 }

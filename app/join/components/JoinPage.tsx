@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package } from 'lucide-react'
-import Header from '../../components/Header'
-import Footer from '../../components/Footer'
 
 export default function JoinPage() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
@@ -87,9 +85,7 @@ export default function JoinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <Header />
-      
+    <div className="bg-white dark:bg-gray-900">
       {/* Hero Section */}
       <section className="pt-24 pb-12 bg-gradient-to-br from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -553,8 +549,6 @@ export default function JoinPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }
