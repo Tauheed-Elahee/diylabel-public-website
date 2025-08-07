@@ -1,6 +1,6 @@
 'use client'
 
-import { Leaf, MapPin, Zap, Users, Shield, TrendingUp, Store, Printer } from 'lucide-react'
+import { Leaf, MapPin, Zap, Users, Shield, TrendingUp, Store, Printer, Footprints } from 'lucide-react'
 
 const features = [
   {
@@ -16,9 +16,9 @@ const features = [
     color: 'text-blue-500'
   },
   {
-    icon: Store,
+    icon: Footprints,
     title: 'Increase Local Foot Traffic',
-    description: 'Drive new customers to your print shop through our network of Shopify stores and local partnerships.',
+    description: 'Increase local foot traffic for local businesses. Reduce shipping to $0.',
     color: 'text-orange-500'
   },
   {
