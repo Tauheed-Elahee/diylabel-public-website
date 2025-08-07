@@ -69,6 +69,9 @@ export default function JoinPage() {
     { key: 'saturday', label: 'Saturday' },
     { key: 'sunday', label: 'Sunday' }
   ]
+
+  type DayKey = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -77,7 +80,7 @@ export default function JoinPage() {
     }))
   }
 
-  const handleHoursChange = (day: string, field: string, value: string | boolean) => {
+  const handleHoursChange = (day: DayKey, field: 'open' | 'close' | 'closed', value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       businessHours: {
@@ -416,7 +419,7 @@ export default function JoinPage() {
                           <input
                             type="checkbox"
                             checked={formData.businessHours[day.key].closed}
-                            onChange={(e) => handleHoursChange(day.key, 'closed', e.target.checked)}
+                            onChange={(e) => handleHoursChange(day.key as DayKey, 'closed', e.target.checked)}
                             className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                           />
                           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Closed</span>
@@ -429,7 +432,7 @@ export default function JoinPage() {
                               <input
                                 type="time"
                                 value={formData.businessHours[day.key].open}
-                                onChange={(e) => handleHoursChange(day.key, 'open', e.target.value)}
+                                onChange={(e) => handleHoursChange(day.key as DayKey, 'open', e.target.value)}
                                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
                               />
                             </div>
@@ -438,7 +441,7 @@ export default function JoinPage() {
                               <input
                                 type="time"
                                 value={formData.businessHours[day.key].close}
-                                onChange={(e) => handleHoursChange(day.key, 'close', e.target.value)}
+                                onChange={(e) => handleHoursChange(day.key as DayKey, 'close', e.target.value)}
                                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
                               />
                             </div>
