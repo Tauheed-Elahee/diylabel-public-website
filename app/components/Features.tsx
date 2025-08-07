@@ -24,7 +24,7 @@ const features = [
   {
     icon: TrendingUp,
     title: 'Grow Your Business',
-    description: 'Expand your product offerings without inventory risk or upfront investment.',
+    description: 'Accelerate business growth with faster delivery times and reduced shipping costs that increase customer satisfaction and drive higher order volumes.',
     color: 'text-indigo-500'
   }
 ]
