@@ -16,22 +16,10 @@ const features = [
     color: 'text-blue-500'
   },
   {
-    icon: Zap,
-    title: 'Seamless Integration',
-    description: 'Easy Shopify integration that works with your existing store setup in minutes.',
-    color: 'text-yellow-500'
-  },
-  {
     icon: Users,
     title: 'Community Driven',
     description: 'Build relationships between creators, store owners, and local print professionals.',
     color: 'text-purple-500'
-  },
-  {
-    icon: Shield,
-    title: 'Quality Assured',
-    description: 'All print shops are verified and maintain high quality standards for your products.',
-    color: 'text-red-500'
   },
   {
     icon: TrendingUp,
