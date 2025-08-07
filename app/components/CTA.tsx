@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, CheckCircle, Store, Printer, Users, Handshake } from 'lucide-react'
+import { ArrowRight, CheckCircle, Store, Printer, Users, HeartHandshake as Handshake } from 'lucide-react'
 
 const storeBenefits = [
   'Zero inventory risk',
