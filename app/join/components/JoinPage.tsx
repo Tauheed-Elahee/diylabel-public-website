@@ -91,10 +91,10 @@ export default function JoinPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              Partner with DIY Label
+              Hot Leads in Your Area Want T-Shirts
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              Join Canada's fastest-growing network of local print shops and transform your business with steady, profitable orders.
+              Connecting designers and local print shop owners to give the best value to customers.
             </p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
               See How Print Shops Are Growing with DIY Label
