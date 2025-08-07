@@ -15,7 +15,15 @@ export default function JoinPage() {
     city: '',
     province: '',
     postalCode: '',
-    businessHours: '',
+    businessHours: {
+      monday: { open: '09:00', close: '17:00', closed: false },
+      tuesday: { open: '09:00', close: '17:00', closed: false },
+      wednesday: { open: '09:00', close: '17:00', closed: false },
+      thursday: { open: '09:00', close: '17:00', closed: false },
+      friday: { open: '09:00', close: '17:00', closed: false },
+      saturday: { open: '10:00', close: '16:00', closed: false },
+      sunday: { open: '10:00', close: '16:00', closed: true }
+    },
     clothingTypes: [],
     specialties: '',
     currentCapacity: '',
@@ -37,6 +45,15 @@ export default function JoinPage() {
     'Other Apparel'
   ]
 
+  const daysOfWeek = [
+    { key: 'monday', label: 'Monday' },
+    { key: 'tuesday', label: 'Tuesday' },
+    { key: 'wednesday', label: 'Wednesday' },
+    { key: 'thursday', label: 'Thursday' },
+    { key: 'friday', label: 'Friday' },
+    { key: 'saturday', label: 'Saturday' },
+    { key: 'sunday', label: 'Sunday' }
+  ]
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -45,6 +62,18 @@ export default function JoinPage() {
     }))
   }
 
+  const handleHoursChange = (day: string, field: string, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      businessHours: {
+        ...prev.businessHours,
+        [day]: {
+          ...prev.businessHours[day],
+          [field]: value
+        }
+      }
+    }))
+  }
   const handleClothingTypeChange = (type: string) => {
     setFormData(prev => ({
       ...prev,
@@ -349,20 +378,51 @@ export default function JoinPage() {
                   <Clock className="w-5 h-5 text-primary-600" />
                   Business Hours
                 </h3>
-                <div>
-                  <label htmlFor="businessHours" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Operating Hours *
-                  </label>
-                  <textarea
-                    id="businessHours"
-                    name="businessHours"
-                    required
-                    rows={3}
-                    value={formData.businessHours}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="Monday - Friday: 9:00 AM - 6:00 PM&#10;Saturday: 10:00 AM - 4:00 PM&#10;Sunday: Closed"
-                  />
+                <div className="space-y-3">
+                  {daysOfWeek.map((day) => (
+                    <div key={day.key} className="flex items-center gap-4 p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                      <div className="w-24 flex-shrink-0">
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {day.label}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 flex-1">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.businessHours[day.key].closed}
+                            onChange={(e) => handleHoursChange(day.key, 'closed', e.target.checked)}
+                            className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Closed</span>
+                        </label>
+                        
+                        {!formData.businessHours[day.key].closed && (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <label className="text-sm text-gray-600 dark:text-gray-400">Open:</label>
+                              <input
+                                type="time"
+                                value={formData.businessHours[day.key].open}
+                                onChange={(e) => handleHoursChange(day.key, 'open', e.target.value)}
+                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="text-sm text-gray-600 dark:text-gray-400">Close:</label>
+                              <input
+                                type="time"
+                                value={formData.businessHours[day.key].close}
+                                onChange={(e) => handleHoursChange(day.key, 'close', e.target.value)}
+                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
