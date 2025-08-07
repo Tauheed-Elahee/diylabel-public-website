@@ -3,9 +3,40 @@
 import { useState } from 'react'
 import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package } from 'lucide-react'
 
+// Define types for form data
+interface BusinessHours {
+  monday: { open: string; close: string; closed: boolean }
+  tuesday: { open: string; close: string; closed: boolean }
+  wednesday: { open: string; close: string; closed: boolean }
+  thursday: { open: string; close: string; closed: boolean }
+  friday: { open: string; close: string; closed: boolean }
+  saturday: { open: string; close: string; closed: boolean }
+  sunday: { open: string; close: string; closed: boolean }
+}
+
+interface FormData {
+  businessName: string
+  contactName: string
+  email: string
+  phone: string
+  website: string
+  address: string
+  city: string
+  province: string
+  postalCode: string
+  businessHours: BusinessHours
+  clothingTypes: string[]
+  currentCapacity: string
+  experience: string
+  equipment: string[]
+  additionalInfo: string
+}
+
+type DayKey = keyof BusinessHours
+
 export default function JoinPage() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     businessName: '',
     contactName: '',
     email: '',
@@ -24,11 +55,11 @@ export default function JoinPage() {
       saturday: { open: '10:00', close: '16:00', closed: false },
       sunday: { open: '10:00', close: '16:00', closed: true }
     },
-    clothingTypes: [],
+    clothingTypes: [] as string[],
     specialties: '',
     currentCapacity: '',
     experience: '',
-    equipment: '',
+    equipment: [] as string[],
     additionalInfo: ''
   })
 
@@ -69,8 +100,6 @@ export default function JoinPage() {
     { key: 'saturday', label: 'Saturday' },
     { key: 'sunday', label: 'Sunday' }
   ]
-
-  type DayKey = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -130,12 +159,20 @@ export default function JoinPage() {
       city: '',
       province: '',
       postalCode: '',
-      businessHours: '',
-      clothingTypes: [],
+      businessHours: {
+        monday: { open: '09:00', close: '17:00', closed: false },
+        tuesday: { open: '09:00', close: '17:00', closed: false },
+        wednesday: { open: '09:00', close: '17:00', closed: false },
+        thursday: { open: '09:00', close: '17:00', closed: false },
+        friday: { open: '09:00', close: '17:00', closed: false },
+        saturday: { open: '10:00', close: '16:00', closed: false },
+        sunday: { open: '10:00', close: '16:00', closed: true }
+      },
+      clothingTypes: [] as string[],
       specialties: '',
       currentCapacity: '',
       experience: '',
-      equipment: [],
+      equipment: [] as string[],
       additionalInfo: ''
     })
   }
