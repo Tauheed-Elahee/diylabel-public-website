@@ -32,6 +32,21 @@ export default function JoinPage() {
     additionalInfo: ''
   })
 
+  const equipmentOptions = [
+    'Screen Printing Press',
+    'DTG Printer',
+    'Heat Press',
+    'Embroidery Machine',
+    'Vinyl Cutter',
+    'Sublimation Printer',
+    'Large Format Printer',
+    'Laser Engraver',
+    'Automatic Press',
+    'Manual Press',
+    'Conveyor Dryer',
+    'Other Equipment'
+  ]
+
   const clothingOptions = [
     'T-Shirts',
     'Hoodies',
@@ -83,6 +98,15 @@ export default function JoinPage() {
     }))
   }
 
+  const handleEquipmentChange = (equipment: string) => {
+    setFormData(prev => ({
+      ...prev,
+      equipment: prev.equipment.includes(equipment)
+        ? prev.equipment.filter(e => e !== equipment)
+        : [...prev.equipment, equipment]
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -108,7 +132,7 @@ export default function JoinPage() {
       specialties: '',
       currentCapacity: '',
       experience: '',
-      equipment: '',
+      equipment: [],
       additionalInfo: ''
     })
   }
@@ -512,15 +536,19 @@ export default function JoinPage() {
                     <label htmlFor="equipment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Equipment & Technology
                     </label>
-                    <textarea
-                      id="equipment"
-                      name="equipment"
-                      rows={3}
-                      value={formData.equipment}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Screen printing presses, DTG printers, heat presses, embroidery machines..."
-                    />
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {equipmentOptions.map((equipment) => (
+                        <label key={equipment} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.equipment.includes(equipment)}
+                            onChange={() => handleEquipmentChange(equipment)}
+                            className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{equipment}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
