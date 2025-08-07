@@ -1,14 +1,17 @@
 'use client'
 
-import { ArrowRight, CheckCircle } from 'lucide-react'
+import { ArrowRight, CheckCircle, Store, Printer, Users, Handshake } from 'lucide-react'
 
-const benefits = [
-  'No upfront costs or inventory',
-  'Seamless Shopify integration',
-  'Verified local print partners',
-  'Faster delivery times',
-  'Sustainable business model',
-  '24/7 customer support'
+const storeBenefits = [
+  'Zero inventory risk',
+  'Instant Shopify integration',
+  'Access to local print network'
+]
+
+const printShopBenefits = [
+  'Steady stream of orders',
+  'No customer acquisition costs',
+  'Grow your local business'
 ]
 
 export default function CTA() {
@@ -16,36 +19,72 @@ export default function CTA() {
     <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Transform Your Merch Business?
+          <Users className="w-16 h-16 text-white mx-auto mb-6" />
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Join the DIY Label Network
           </h2>
           <p className="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
-            Join hundreds of successful store owners who are already using DIY Label to offer 
-            sustainable, locally printed merchandise to their customers.
+            We're building the future of sustainable merch. Whether you're a Shopify store owner 
+            or a local print shop, there's a place for you in our growing network.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12 max-w-4xl mx-auto">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center text-primary-100">
-                <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                <span>{benefit}</span>
+          {/* Two-column layout for different audiences */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
+            {/* Shopify Store Owners */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20">
+              <Store className="w-12 h-12 text-accent-300 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-white mb-4">For Store Owners</h3>
+              <p className="text-primary-100 mb-6">
+                Add locally printed merch to your store without inventory risk
+              </p>
+              <div className="space-y-3 mb-6">
+                {storeBenefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center text-primary-100">
+                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                    <span>{benefit}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+              <button className="w-full bg-accent-500 hover:bg-accent-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                Join as Store Owner
+              </button>
+            </div>
+
+            {/* Print Shop Partners */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20">
+              <Printer className="w-12 h-12 text-accent-300 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-white mb-4">For Print Shops</h3>
+              <p className="text-primary-100 mb-6">
+                Connect with local customers and grow your business
+              </p>
+              <div className="space-y-3 mb-6">
+                {printShopBenefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center text-primary-100">
+                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                    <span>{benefit}</span>
+                  </div>
+                ))}
+              </div>
+              <button className="w-full bg-white text-primary-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                Become a Partner
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
-              Start Free Trial
+          {/* Partnership CTA */}
+          <div className="text-center">
+            <Handshake className="w-12 h-12 text-accent-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-4">
+              Ready to Build Something Together?
+            </h3>
+            <button className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2 mx-auto">
+              Learn More About Partnership
               <ArrowRight size={20} />
-            </button>
-            
-            <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300">
-              Schedule Demo
             </button>
           </div>
 
           <p className="text-primary-200 text-sm mt-6">
-            No credit card required • 14-day free trial • Cancel anytime
+            Building a sustainable future, one local partnership at a time
           </p>
         </div>
       </div>
