@@ -15,7 +15,7 @@ export default function Home() {
       <Features />
       <HowItWorks />
       <InteractiveMap />
-      <Testimonials />
+      {/* <Testimonials /> */}
       <CTA />
       <Footer />
     </main>
