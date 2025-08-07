@@ -5,8 +5,8 @@ import { Leaf, MapPin, Zap, Users, Shield, TrendingUp, Store, Printer, Footprint
 const features = [
   {
     icon: Leaf,
-    title: 'Sustainable Printing',
-    description: 'Reduce textile waste and carbon footprint by connecting customers with nearby print shops.',
+    title: 'Zero Cost Carbon Zero',
+    description: 'Eliminate shipping costs to boost profit margins while achieving zero-carbon local delivery for maximum environmental impact.',
     color: 'text-green-500'
   },
   {
