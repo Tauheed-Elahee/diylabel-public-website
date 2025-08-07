@@ -28,43 +28,6 @@ export default function CTA() {
             or a local print shop, there's a place for you in our growing network.
           </p>
 
-          {/* Two-column layout for different audiences */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 max-w-6xl mx-auto">
-            {/* Shopify Store Owners */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20">
-              <Store className="w-12 h-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-4">For Store Owners</h3>
-              <p className="text-primary-100 mb-6">
-                Add locally printed merch to your store without inventory risk
-              </p>
-              <div className="space-y-3 mb-6">
-                {storeBenefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center text-primary-100">
-                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Print Shop Owners */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20">
-              <Printer className="w-12 h-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-4">For Print Shops</h3>
-              <p className="text-primary-100 mb-6">
-                Connect with local stores and grow your business sustainably
-              </p>
-              <div className="space-y-3 mb-6">
-                {printShopBenefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center text-primary-100">
-                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* Two simple buttons for joining */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 max-w-md mx-auto">
             <button className="w-full sm:w-auto bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
