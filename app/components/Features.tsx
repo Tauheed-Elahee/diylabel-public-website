@@ -12,7 +12,7 @@ const features = [
   {
     icon: MapPin,
     title: '2-Hour Shipping',
-    description: 'Ultra-fast local delivery increases customer satisfaction by 85% and drives 3x more repeat purchases compared to traditional shipping.',
+    description: 'Ultra-fast local delivery that delights customers and encourages repeat purchases through same-day fulfillment.',
     color: 'text-blue-500'
   },
   {
