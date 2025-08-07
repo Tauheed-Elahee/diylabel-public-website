@@ -56,7 +56,6 @@ export default function JoinPage() {
       sunday: { open: '10:00', close: '16:00', closed: true }
     },
     clothingTypes: [] as string[],
-    specialties: '',
     currentCapacity: '',
     experience: '',
     equipment: [] as string[],
@@ -169,7 +168,6 @@ export default function JoinPage() {
         sunday: { open: '10:00', close: '16:00', closed: true }
       },
       clothingTypes: [] as string[],
-      specialties: '',
       currentCapacity: '',
       experience: '',
       equipment: [] as string[],
