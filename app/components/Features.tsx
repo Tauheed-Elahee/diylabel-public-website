@@ -12,14 +12,14 @@ const features = [
   {
     icon: MapPin,
     title: 'Local-First Approach',
-    description: 'Support local businesses while providing faster delivery and personalized service.',
+    description: 'Connect with customers in your area while providing faster delivery and building lasting community relationships.',
     color: 'text-blue-500'
   },
   {
-    icon: Users,
-    title: 'Community Driven',
-    description: 'Build relationships between creators, store owners, and local print professionals.',
-    color: 'text-purple-500'
+    icon: Store,
+    title: 'Increase Local Foot Traffic',
+    description: 'Drive new customers to your print shop through our network of Shopify stores and local partnerships.',
+    color: 'text-orange-500'
   },
   {
     icon: TrendingUp,
