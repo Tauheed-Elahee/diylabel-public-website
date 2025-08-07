@@ -10,7 +10,7 @@ const features = [
     color: 'text-green-500'
   },
   {
-    icon: MapPin,
+    icon: Zap,
     title: '2-Hour Shipping',
     description: 'Ultra-fast local delivery that delights customers and encourages repeat purchases through same-day fulfillment.',
     color: 'text-blue-500'
