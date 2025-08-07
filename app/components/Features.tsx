@@ -1,6 +1,6 @@
 'use client'
 
-import { Leaf, MapPin, Zap, Users, Shield, TrendingUp, Store, Printer, Footprints } from 'lucide-react'
+import { Leaf, MapPin, Zap, Users, Shield, TrendingUp, Store, Printer, Footprints, Package } from 'lucide-react'
 
 const features = [
   {
@@ -10,7 +10,7 @@ const features = [
     color: 'text-green-500'
   },
   {
-    icon: Zap,
+    icon: Package,
     title: '2-Hour Shipping',
     description: 'Ultra-fast local delivery that delights customers and encourages repeat purchases through same-day fulfillment.',
     color: 'text-blue-500'
