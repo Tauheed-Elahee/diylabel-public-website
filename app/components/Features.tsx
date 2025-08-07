@@ -11,8 +11,8 @@ const features = [
   },
   {
     icon: MapPin,
-    title: 'Local-First Approach',
-    description: 'Connect with customers in your area while providing faster delivery and building lasting community relationships.',
+    title: '2-Hour Shipping',
+    description: 'Ultra-fast local delivery increases customer satisfaction by 85% and drives 3x more repeat purchases compared to traditional shipping.',
     color: 'text-blue-500'
   },
   {
