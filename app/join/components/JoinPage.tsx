@@ -16,7 +16,7 @@ export default function JoinPage() {
     province: '',
     postalCode: '',
     businessHours: '',
-    clothingTypes: [] as string[],
+    clothingTypes: [],
     specialties: '',
     currentCapacity: '',
     experience: '',
