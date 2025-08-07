@@ -45,47 +45,14 @@ export default function CTA() {
                   </div>
                 ))}
               </div>
-              <button className="w-full bg-accent-500 hover:bg-accent-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
-                Join as Store Owner
-              </button>
-            </div>
-
-            {/* Print Shop Partners */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20">
-              <Printer className="w-12 h-12 text-accent-300 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-4">For Print Shops</h3>
-              <p className="text-primary-100 mb-6">
-                Connect with local customers and grow your business
-              </p>
-              <div className="space-y-3 mb-6">
-                {printShopBenefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center text-primary-100">
-                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-              <button className="w-full bg-white text-primary-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
-                Become a Partner
-              </button>
-            </div>
-          </div>
-
-          {/* Partnership CTA */}
-          <div className="text-center">
-            <Handshake className="w-12 h-12 text-accent-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-4">
-              Ready to Build Something Together?
-            </h3>
-            <button className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2 mx-auto">
-              Learn More About Partnership
-              <ArrowRight size={20} />
-            </button>
-          </div>
-
-          <p className="text-primary-200 text-sm mt-6">
-            Building a sustainable future, one local partnership at a time
-          </p>
+        {/* Two simple buttons for joining */}
+        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 max-w-md mx-auto">
+          <button className="w-full sm:w-auto bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+            Local Supplier
+          </button>
+          <button className="w-full sm:w-auto bg-accent-500 hover:bg-accent-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+            eCom Storefront
+          </button>
         </div>
       </div>
     </section>
