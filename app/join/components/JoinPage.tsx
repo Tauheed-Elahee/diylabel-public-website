@@ -255,59 +255,42 @@ export default function JoinPage() {
   }
 
   const handleHoursChange = (day: DayKey, field: 'open' | 'close' | 'closed' | '24hour', value: string | boolean) => {
-    if (field === 'closed' && value === true) {
-      // Set day to closed (false)
-      setFormData(prev => ({
-        ...prev,
-        businessHours: {
-          ...prev.businessHours,
-          [day]: false
-        }
-      }))
-    } else if (field === '24hour' && value === true) {
-      // Set day to 24 hours (true)
-      setFormData(prev => ({
-        ...prev,
-        businessHours: {
-          ...prev.businessHours,
-          [day]: true
-        }
-      }))
-    } else if ((field === 'closed' || field === '24hour') && value === false) {
-      // Set day to open with default hours
-      setFormData(prev => ({
-        ...prev,
-        businessHours: {
-          ...prev.businessHours,
-          [day]: { open: 900, close: 1700 }
-        }
-      }))
-    } else if (field === 'open' || field === 'close') {
-      // Convert HH:MM to 4-digit number
-      const timeNumber = parseTimeInput(value.toString())
-      setFormData(prev => {
+    setFormData(prev => {
+      const newBusinessHours = { ...prev.businessHours }
+      
+      if (field === 'closed' && value === true) {
+        // Set day to closed (false)
+        newBusinessHours[day] = false
+      } else if (field === '24hour' && value === true) {
+        // Set day to 24 hours (true)
+        newBusinessHours[day] = true
+      } else if ((field === 'closed' || field === '24hour') && value === false) {
+        // Set day to open with default hours
+        newBusinessHours[day] = { open: 900, close: 1700 }
+      } else if (field === 'open' || field === 'close') {
+        // Convert HH:MM to 4-digit number
+        const timeNumber = parseTimeInput(value.toString())
         const currentDayData = prev.businessHours[day]
         
         // Ensure we have a valid object to work with
         let currentHours: { open: number; close: number }
-        if (typeof currentDayData === 'object' && currentDayData !== null && !Array.isArray(currentDayData)) {
+        if (typeof currentDayData === 'object' && currentDayData !== null && !Array.isArray(currentDayData) && typeof currentDayData !== 'boolean') {
           currentHours = currentDayData as { open: number; close: number }
         } else {
           currentHours = { open: 900, close: 1700 }
         }
         
-        return {
-          ...prev,
-          businessHours: {
-            ...prev.businessHours,
-            [day]: {
-              ...currentHours,
-              [field]: timeNumber
-            }
-          }
+        newBusinessHours[day] = {
+          open: field === 'open' ? timeNumber : currentHours.open,
+          close: field === 'close' ? timeNumber : currentHours.close
         }
-      })
-    }
+      }
+      
+      return {
+        ...prev,
+        businessHours: newBusinessHours
+      }
+    })
   }
 
   // Helper function to convert 4-digit number to HH:MM for input display
