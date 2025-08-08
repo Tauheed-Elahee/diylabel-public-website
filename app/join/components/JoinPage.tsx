@@ -287,7 +287,14 @@ export default function JoinPage() {
       const timeNumber = parseTimeInput(value.toString())
       setFormData(prev => {
         const currentDayData = prev.businessHours[day]
-        const currentHours = typeof currentDayData === 'object' ? currentDayData : { open: 900, close: 1700 }
+        
+        // Ensure we have a valid object to work with
+        let currentHours: { open: number; close: number }
+        if (typeof currentDayData === 'object' && currentDayData !== null && !Array.isArray(currentDayData)) {
+          currentHours = currentDayData as { open: number; close: number }
+        } else {
+          currentHours = { open: 900, close: 1700 }
+        }
         
         return {
           ...prev,
