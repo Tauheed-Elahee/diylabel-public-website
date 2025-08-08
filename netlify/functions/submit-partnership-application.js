@@ -120,6 +120,54 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Validate country code
+    if (!['CA', 'US'].includes(country)) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: 'Invalid country code. Must be CA or US.' })
+      };
+    }
+
+    // Validate province/state codes
+    const validProvinces = {
+      'CA': ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'ON', 'PE', 'QC', 'SK', 'NT', 'NU', 'YT'],
+      'US': ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC']
+    };
+
+    if (!validProvinces[country].includes(province)) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ 
+          error: `Invalid province/state code for ${country}. Must be one of: ${validProvinces[country].join(', ')}` 
+        })
+      };
+    }
+
+    // Validate business hours format
+    if (businessHours && typeof businessHours === 'object') {
+      const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+      for (const day of validDays) {
+        if (businessHours[day]) {
+          const dayData = businessHours[day];
+          if (dayData !== 'closed' && typeof dayData === 'object') {
+            // Validate 4-digit time format
+            const timeRegex = /^([0-1][0-9]|2[0-3])[0-5][0-9]$/;
+            if (!timeRegex.test(dayData.open) || !timeRegex.test(dayData.close)) {
+              return {
+                statusCode: 400,
+                headers: corsHeaders,
+                body: JSON.stringify({ 
+                  error: `Invalid time format for ${day}. Use 4-digit 24-hour format (e.g., 0900, 1730)` 
+                })
+              };
+            }
+          }
+        }
+      }
+    }
+
     // Check if email already exists
     const { data: existingApplication } = await supabaseAdmin
       .from('partnership_applications')
