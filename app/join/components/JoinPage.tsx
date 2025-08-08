@@ -77,33 +77,39 @@ export default function JoinPage() {
     'Other Equipment'
   ]
 
-  const clothingOptions = [
-    'T-Shirts',
-    'Hoodies',
-    'Sweatshirts',
-    'Tank Tops',
-    'Long Sleeves',
-    'Polo Shirts',
-    'Jackets',
-    'Hats/Caps',
-    'Tote Bags',
-    'Other Apparel',
-    'Mugs',
-    'Water Bottles',
-    'Tumblers',
-    'Coffee Cups',
-    'Wine Glasses',
-    'Other Drinkware',
-    'Canvas Prints',
-    'Posters',
-    'Wall Art',
-    'Throw Pillows',
-    'Blankets',
-    'Phone Cases',
-    'Keychains',
-    'Stickers',
-    'Other Home Decor'
-  ]
+  const productCategories = {
+    apparel: [
+      'T-Shirts',
+      'Hoodies',
+      'Sweatshirts',
+      'Tank Tops',
+      'Long Sleeves',
+      'Polo Shirts',
+      'Jackets',
+      'Hats/Caps',
+      'Tote Bags',
+      'Other Apparel'
+    ],
+    drinkware: [
+      'Mugs',
+      'Water Bottles',
+      'Tumblers',
+      'Coffee Cups',
+      'Wine Glasses',
+      'Other Drinkware'
+    ],
+    homeDecor: [
+      'Canvas Prints',
+      'Posters',
+      'Wall Art',
+      'Throw Pillows',
+      'Blankets',
+      'Phone Cases',
+      'Keychains',
+      'Stickers',
+      'Other Home Decor'
+    ]
+  }
 
   const daysOfWeek = [
     { key: 'monday', label: 'Monday' },
@@ -509,18 +515,68 @@ export default function JoinPage() {
                   <Shirt className="w-5 h-5 text-primary-600" />
                   Products You Can Print
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {clothingOptions.map((type) => (
-                    <label key={type} className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.clothingTypes.includes(type)}
-                        onChange={() => handleClothingTypeChange(type)}
-                        className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{type}</span>
-                    </label>
-                  ))}
+                
+                {/* Apparel Section */}
+                <div className="mb-6">
+                  <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                    <Shirt className="w-4 h-4 text-primary-600" />
+                    Apparel
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {productCategories.apparel.map((type) => (
+                      <label key={type} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.clothingTypes.includes(type)}
+                          onChange={() => handleClothingTypeChange(type)}
+                          className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{type}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Drinkware Section */}
+                <div className="mb-6">
+                  <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                    <Package className="w-4 h-4 text-primary-600" />
+                    Drinkware
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {productCategories.drinkware.map((type) => (
+                      <label key={type} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.clothingTypes.includes(type)}
+                          onChange={() => handleClothingTypeChange(type)}
+                          className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{type}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Home Decor Section */}
+                <div>
+                  <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-primary-600" />
+                    Home Decor
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {productCategories.homeDecor.map((type) => (
+                      <label key={type} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.clothingTypes.includes(type)}
+                          onChange={() => handleClothingTypeChange(type)}
+                          className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{type}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
 
