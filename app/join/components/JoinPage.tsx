@@ -49,7 +49,6 @@ export default function JoinPage() {
     address: '',
     city: '',
     country: 'CA', // Default to Canada
-    country: 'CA', // Default to Canada
     province: '',
     postalCode: '',
     businessHours: {
@@ -590,26 +589,6 @@ export default function JoinPage() {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Country *
-                    </label>
-                    <select
-                      id="country"
-                      name="country"
-                      required
-                      value={formData.country}
-                      onChange={handleCountryChange}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    >
-                      <option value="">Select Country</option>
-                      {availableCountries.map((country) => (
-                        <option key={country.code} value={country.code}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
                     <label htmlFor="province" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       {formData.country === 'US' ? 'State *' : 'Province *'}
                     </label>
@@ -621,16 +600,8 @@ export default function JoinPage() {
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       disabled={!formData.country}
-                      disabled={!formData.country}
                     >
                       <option value="">
-                        {formData.country === 'US' ? 'Select State' : 'Select Province'}
-                      </option>
-                      {getProvincesForCountry(formData.country).map((province) => (
-                        <option key={province.code} value={province.code}>
-                          {province.name}
-                        </option>
-                      ))}
                         {formData.country === 'US' ? 'Select State' : 'Select Province'}
                       </option>
                       {getProvincesForCountry(formData.country).map((province) => (
