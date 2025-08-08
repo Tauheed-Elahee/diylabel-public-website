@@ -74,6 +74,27 @@ export default function JoinPage() {
     unitNumber: ''
   })
 
+  // Handle select all for product categories
+  const handleSelectAll = (category: 'apparel' | 'drinkware' | 'homeDecor') => {
+    const categoryOptions = {
+      apparel: ['T-Shirts', 'Hoodies', 'Sweatshirts', 'Tank Tops', 'Long Sleeves', 'Polo Shirts', 'Jackets', 'Hats/Caps', 'Tote Bags'],
+      drinkware: ['Mugs', 'Water Bottles', 'Tumblers', 'Coffee Cups', 'Wine Glasses'],
+      homeDecor: ['Canvas Prints', 'Posters', 'Wall Art', 'Throw Pillows', 'Blankets', 'Phone Cases', 'Keychains', 'Stickers']
+    }
+
+    const optionsToAdd = categoryOptions[category]
+    
+    setFormData(prev => ({
+      ...prev,
+      clothingTypes: [
+        // Remove existing items from this category (including "Other" items)
+        ...prev.clothingTypes.filter(item => !optionsToAdd.includes(item) && !item.includes('Other')),
+        // Add all items from this category (excluding "Other")
+        ...optionsToAdd
+      ]
+    }))
+  }
+
   // Handle address autocomplete selection
   const handleAddressSelect = (addressData: {
     fullAddress: string
