@@ -30,6 +30,8 @@ interface FormData {
   experience: string
   equipment: string[]
   additionalInfo: string
+  businessType: string
+  ownershipRole: string
 }
 
 type DayKey = keyof BusinessHours
@@ -59,7 +61,9 @@ export default function JoinPage() {
     currentCapacity: '',
     experience: '',
     equipment: [] as string[],
-    additionalInfo: ''
+    additionalInfo: '',
+    businessType: '',
+    ownershipRole: ''
   })
 
   const equipmentOptions = [
@@ -192,7 +196,9 @@ export default function JoinPage() {
       currentCapacity: '',
       experience: '',
       equipment: [] as string[],
-      additionalInfo: ''
+      additionalInfo: '',
+      businessType: '',
+      ownershipRole: ''
     })
   }
 
@@ -315,6 +321,45 @@ export default function JoinPage() {
                       placeholder="Your Name"
                     />
                   </div>
+                  <div>
+                    <label htmlFor="businessType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Business Type *
+                    </label>
+                    <select
+                      id="businessType"
+                      name="businessType"
+                      required
+                      value={formData.businessType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select business type</option>
+                      <option value="independent">Independent Business</option>
+                      <option value="franchise">Franchise</option>
+                      <option value="chain">Chain Store</option>
+                    </select>
+                  </div>
+                  {(formData.businessType === 'franchise' || formData.businessType === 'chain') && (
+                    <div>
+                      <label htmlFor="ownershipRole" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Your Role *
+                      </label>
+                      <select
+                        id="ownershipRole"
+                        name="ownershipRole"
+                        required
+                        value={formData.ownershipRole}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <option value="">Select your role</option>
+                        <option value="owner">Owner/Corporate Representative</option>
+                        <option value="franchisee">Franchisee/Local Owner</option>
+                        <option value="manager">Store Manager</option>
+                        <option value="authorized">Authorized Representative</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
 
