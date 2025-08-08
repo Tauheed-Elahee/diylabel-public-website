@@ -285,16 +285,21 @@ export default function JoinPage() {
     } else if (field === 'open' || field === 'close') {
       // Convert HH:MM to 4-digit number
       const timeNumber = parseTimeInput(value.toString())
-      setFormData(prev => ({
-        ...prev,
-        businessHours: {
-          ...prev.businessHours,
-          [day]: {
-            ...(typeof prev.businessHours[day] === 'object' ? prev.businessHours[day] : { open: 900, close: 1700 }),
-            [field]: timeNumber
+      setFormData(prev => {
+        const currentDayData = prev.businessHours[day]
+        const currentHours = typeof currentDayData === 'object' ? currentDayData : { open: 900, close: 1700 }
+        
+        return {
+          ...prev,
+          businessHours: {
+            ...prev.businessHours,
+            [day]: {
+              ...currentHours,
+              [field]: timeNumber
+            }
           }
         }
-      }))
+      })
     }
   }
 
