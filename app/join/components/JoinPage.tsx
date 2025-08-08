@@ -347,19 +347,6 @@ export default function JoinPage() {
     }
     return { open: 900, close: 1700 }
   }
-
-  const handleHoursChangeOld = (day: DayKey, field: 'open' | 'close' | 'closed', value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      businessHours: {
-        ...prev.businessHours,
-        [day]: {
-          ...prev.businessHours[day],
-          [field]: value
-        }
-      }
-    }))
-  }
   const handleClothingTypeChange = (type: string) => {
     setFormData(prev => ({
       ...prev,
