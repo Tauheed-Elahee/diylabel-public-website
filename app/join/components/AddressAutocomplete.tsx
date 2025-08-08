@@ -100,26 +100,109 @@ export default function AddressAutocomplete({
       return item ? item.text : ''
     }
 
-    // Extract address components
+    // Extract ONLY street number and name (not full address)
     const streetNumber = suggestion.address || ''
     const streetName = suggestion.text || ''
     const streetAddress = streetNumber ? `${streetNumber} ${streetName}` : streetName
     
     const city = getContextValue('place') || getContextValue('locality') || ''
-    const province = getContextValue('region') || ''
+    const regionContext = context.find((c: any) => c.id.includes('region'))
+    const province = regionContext ? regionContext.short_code || regionContext.text : ''
     const country = getContextValue('country') || ''
     const postalCode = getContextValue('postcode') || ''
 
-    // Convert country name to code
-    const countryCode = country.toLowerCase() === 'canada' ? 'CA' : 
-                      country.toLowerCase() === 'united states' ? 'US' : 
-                      country
+    // Convert country name to proper code
+    let countryCode = ''
+    if (country.toLowerCase().includes('canada')) {
+      countryCode = 'CA'
+    } else if (country.toLowerCase().includes('united states') || country.toLowerCase().includes('usa')) {
+      countryCode = 'US'
+    } else {
+      countryCode = country
+    }
+
+    // Convert province name to proper code for the selected country
+    let provinceCode = ''
+    if (countryCode === 'CA') {
+      // Canadian provinces mapping
+      const canadianProvinces: { [key: string]: string } = {
+        'alberta': 'AB',
+        'british columbia': 'BC',
+        'manitoba': 'MB',
+        'new brunswick': 'NB',
+        'newfoundland and labrador': 'NL',
+        'nova scotia': 'NS',
+        'ontario': 'ON',
+        'prince edward island': 'PE',
+        'quebec': 'QC',
+        'saskatchewan': 'SK',
+        'northwest territories': 'NT',
+        'nunavut': 'NU',
+        'yukon': 'YT'
+      }
+      provinceCode = canadianProvinces[province.toLowerCase()] || province
+    } else if (countryCode === 'US') {
+      // US states mapping (common ones)
+      const usStates: { [key: string]: string } = {
+        'california': 'CA',
+        'new york': 'NY',
+        'texas': 'TX',
+        'florida': 'FL',
+        'illinois': 'IL',
+        'pennsylvania': 'PA',
+        'ohio': 'OH',
+        'georgia': 'GA',
+        'north carolina': 'NC',
+        'michigan': 'MI',
+        'new jersey': 'NJ',
+        'virginia': 'VA',
+        'washington': 'WA',
+        'arizona': 'AZ',
+        'massachusetts': 'MA',
+        'tennessee': 'TN',
+        'indiana': 'IN',
+        'missouri': 'MO',
+        'maryland': 'MD',
+        'wisconsin': 'WI',
+        'colorado': 'CO',
+        'minnesota': 'MN',
+        'south carolina': 'SC',
+        'alabama': 'AL',
+        'louisiana': 'LA',
+        'kentucky': 'KY',
+        'oregon': 'OR',
+        'oklahoma': 'OK',
+        'connecticut': 'CT',
+        'utah': 'UT',
+        'iowa': 'IA',
+        'nevada': 'NV',
+        'arkansas': 'AR',
+        'mississippi': 'MS',
+        'kansas': 'KS',
+        'new mexico': 'NM',
+        'nebraska': 'NE',
+        'west virginia': 'WV',
+        'idaho': 'ID',
+        'hawaii': 'HI',
+        'new hampshire': 'NH',
+        'maine': 'ME',
+        'montana': 'MT',
+        'rhode island': 'RI',
+        'delaware': 'DE',
+        'south dakota': 'SD',
+        'north dakota': 'ND',
+        'alaska': 'AK',
+        'vermont': 'VT',
+        'wyoming': 'WY',
+        'district of columbia': 'DC'
+      }
+      provinceCode = usStates[province.toLowerCase()] || province
+    }
 
     const addressData = {
-      fullAddress: suggestion.place_name || '',
       streetAddress: streetAddress,
       city: city,
-      province: province,
+      province: provinceCode,
       country: countryCode,
       postalCode: postalCode
     }
@@ -127,7 +210,7 @@ export default function AddressAutocomplete({
     onAddressSelect(addressData)
     
     if (onChange) {
-      onChange(suggestion.place_name || '')
+      onChange(streetAddress)
     }
     
     setSuggestions([])
