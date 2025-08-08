@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package } from 'lucide-react'
+import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package, Coffee } from 'lucide-react'
 
 // Define types for form data
 interface BusinessHours {
@@ -540,7 +540,7 @@ export default function JoinPage() {
                 {/* Drinkware Section */}
                 <div className="mb-6">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
-                    🥃
+                    <Coffee className="w-4 h-4 text-primary-600" />
                     Drinkware
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
