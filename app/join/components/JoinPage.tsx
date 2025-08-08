@@ -383,6 +383,25 @@ export default function JoinPage() {
     setFormData(prev => ({
       ...prev,
       phone: formatted
+  // Handle select all for product categories
+  const handleSelectAll = (category: 'apparel' | 'drinkware' | 'homeDecor') => {
+    const categoryOptions = {
+      apparel: ['T-Shirts', 'Hoodies', 'Sweatshirts', 'Tank Tops', 'Long Sleeves', 'Polo Shirts', 'Jackets', 'Hats/Caps', 'Tote Bags'],
+      drinkware: ['Mugs', 'Water Bottles', 'Tumblers', 'Coffee Cups', 'Wine Glasses'],
+      homeDecor: ['Canvas Prints', 'Posters', 'Wall Art', 'Throw Pillows', 'Blankets', 'Phone Cases', 'Keychains', 'Stickers']
+    }
+
+    const optionsToSelect = categoryOptions[category]
+    
+    setFormData(prev => ({
+      ...prev,
+      clothingTypes: [
+        ...prev.clothingTypes.filter(item => !categoryOptions[category].includes(item) && !item.startsWith('Other')),
+        ...optionsToSelect
+      ]
+    }))
+  }
+
     }))
   }
   const handleSubmit = async (e: React.FormEvent) => {
