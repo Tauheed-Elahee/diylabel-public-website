@@ -94,24 +94,38 @@ export default function AddressAutocomplete({
   const handleSuggestionClick = (suggestion: any) => {
     const context = suggestion.context || []
     
-    // Parse address components from Mapbox response
+    // Parse address components from Mapbox response with enhanced province detection
     const getContextValue = (type: string) => {
       const item = context.find((c: any) => c.id.includes(type))
       return item ? item.text : ''
     }
 
-    // Extract ONLY street number and name (not full address)
-    const streetNumber = suggestion.address || ''
+    // Extract ONLY street number and name from the suggestion
+    // suggestion.address contains the street number
+    // suggestion.text contains the street name
     const streetName = suggestion.text || ''
-    const streetAddress = streetNumber ? `${streetNumber} ${streetName}` : streetName
+    const streetNumber = suggestion.address || ''
+    
+    // Combine street number and name for clean street address
+    let streetAddress = ''
+    if (streetNumber && streetName) {
+      streetAddress = `${streetNumber} ${streetName}`
+    } else if (streetName) {
+      // If no street number, just use the street name
+      streetAddress = streetName
+    } else {
+      // Fallback to parsing from place_name
+      const addressParts = suggestion.place_name.split(',')
+      streetAddress = addressParts[0]?.trim() || ''
+    }
     
     const city = getContextValue('place') || getContextValue('locality') || ''
     
-    // Enhanced province/state detection
+    // Enhanced province/state detection with comprehensive mapping
     const regionContext = context.find((c: any) => c.id.includes('region'))
     let province = ''
     if (regionContext) {
-      // Try short_code first (e.g., "ON", "CA"), then fall back to text
+      // Try short_code first (e.g., "ON", "QC"), then fall back to text
       province = regionContext.short_code || regionContext.text || ''
     }
     
@@ -131,7 +145,7 @@ export default function AddressAutocomplete({
     // Enhanced province/state code conversion
     let provinceCode = ''
     if (countryCode === 'CA') {
-      // Canadian provinces mapping
+      // Comprehensive Canadian provinces mapping
       const canadianProvinces: { [key: string]: string } = {
         // Full names
         'alberta': 'AB',
@@ -150,7 +164,7 @@ export default function AddressAutocomplete({
         'yukon': 'YT',
         // Short codes (in case Mapbox returns these)
         'ab': 'AB',
-        'bc': 'BC',
+        'bc': 'BC', 'b.c.': 'BC',
         'mb': 'MB',
         'nb': 'NB',
         'nl': 'NL',
@@ -158,7 +172,7 @@ export default function AddressAutocomplete({
         'on': 'ON',
         'pe': 'PE',
         'qc': 'QC',
-        'sk': 'SK',
+        'sk': 'SK', 'sask': 'SK',
         'nt': 'NT',
         'nu': 'NU',
         'yt': 'YT'
@@ -167,7 +181,7 @@ export default function AddressAutocomplete({
       // Try exact match first, then lowercase match
       provinceCode = canadianProvinces[province] || canadianProvinces[province.toLowerCase()] || province
     } else if (countryCode === 'US') {
-      // US states mapping (common ones)
+      // Comprehensive US states mapping
       const usStates: { [key: string]: string } = {
         // Full names
         'california': 'CA',
@@ -242,6 +256,14 @@ export default function AddressAutocomplete({
       provinceCode = province
     }
 
+    // Debug logging to help troubleshoot
+    console.log('Address parsing debug:', {
+      suggestion: suggestion,
+      extractedProvince: province,
+      mappedProvinceCode: provinceCode,
+      regionContext: regionContext
+    })
+
     const addressData = {
       fullAddress: suggestion.place_name,
       streetAddress: streetAddress,
@@ -251,11 +273,6 @@ export default function AddressAutocomplete({
       postalCode: postalCode
     }
 
-    console.log('Address selected:', {
-      original: suggestion,
-      parsed: addressData,
-      regionContext: regionContext
-    })
     onAddressSelect(addressData)
     
     if (onChange) {

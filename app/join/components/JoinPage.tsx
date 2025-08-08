@@ -71,6 +71,7 @@ export default function JoinPage() {
 
   // Handle address autocomplete selection
   const handleAddressSelect = (addressData: {
+    fullAddress: string
     streetAddress: string
     city: string
     province: string
