@@ -424,13 +424,6 @@ export default function JoinPage() {
           province: '',
           postalCode: '',
           businessHours: {
-            monday: { open: '0900', close: '1700' },
-            tuesday: { open: '0900', close: '1700' },
-            wednesday: { open: '0900', close: '1700' },
-            thursday: { open: '0900', close: '1700' },
-            friday: { open: '0900', close: '1700' },
-            saturday: { open: '1000', close: '1600' },
-          businessHours: {
             monday: { open: 900, close: 1700 },
             tuesday: { open: 900, close: 1700 },
             wednesday: { open: 900, close: 1700 },
