@@ -541,9 +541,9 @@ export default function JoinPage() {
                   Location Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
+                  <div>
                     <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Street Address *
+                      Street Address (Number & Name) *
                     </label>
                     <AddressAutocomplete
                       value={formData.address}
