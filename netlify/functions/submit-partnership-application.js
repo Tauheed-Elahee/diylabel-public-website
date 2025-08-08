@@ -152,14 +152,55 @@ exports.handler = async (event, context) => {
         if (businessHours[day]) {
           const dayData = businessHours[day];
           if (dayData !== 'closed' && typeof dayData === 'object') {
-            // Validate 4-digit time format
-            const timeRegex = /^([0-1][0-9]|2[0-3])[0-5][0-9]$/;
-            if (!timeRegex.test(dayData.open) || !timeRegex.test(dayData.close)) {
+            // Validate 4-digit time numbers
+            const openTime = parseInt(dayData.open);
+            const closeTime = parseInt(dayData.close);
+            
+            // Check if times are valid numbers
+            if (isNaN(openTime) || isNaN(closeTime)) {
               return {
                 statusCode: 400,
                 headers: corsHeaders,
                 body: JSON.stringify({ 
-                  error: `Invalid time format for ${day}. Use 4-digit 24-hour format (e.g., 0900, 1730)` 
+                  error: `Invalid time format for ${day}. Times must be numbers.` 
+                })
+              };
+            }
+            
+            // Validate time ranges (0000-2359)
+            if (openTime < 0 || openTime > 2359 || closeTime < 0 || closeTime > 2359) {
+              return {
+                statusCode: 400,
+                headers: corsHeaders,
+                body: JSON.stringify({ 
+                  error: `Invalid time range for ${day}. Times must be between 0000 and 2359.` 
+                })
+              };
+            }
+            
+            // Validate hour and minute components
+            const openHours = Math.floor(openTime / 100);
+            const openMinutes = openTime % 100;
+            const closeHours = Math.floor(closeTime / 100);
+            const closeMinutes = closeTime % 100;
+            
+            if (openHours > 23 || closeHours > 23 || openMinutes > 59 || closeMinutes > 59) {
+              return {
+                statusCode: 400,
+                headers: corsHeaders,
+                body: JSON.stringify({ 
+                  error: `Invalid time format for ${day}. Hours must be 00-23, minutes must be 00-59.` 
+                })
+              };
+            }
+            
+            // Validate logical order (open < close for same day)
+            if (openTime >= closeTime) {
+              return {
+                statusCode: 400,
+                headers: corsHeaders,
+                body: JSON.stringify({ 
+                  error: `Invalid time order for ${day}. Opening time must be before closing time.` 
                 })
               };
             }

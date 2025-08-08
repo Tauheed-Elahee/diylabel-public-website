@@ -6,13 +6,13 @@ import AddressAutocomplete from './AddressAutocomplete'
 
 // Define types for form data
 interface BusinessHours {
-  monday: { open: string; close: string } | 'closed'
-  tuesday: { open: string; close: string } | 'closed'
-  wednesday: { open: string; close: string } | 'closed'
-  thursday: { open: string; close: string } | 'closed'
-  friday: { open: string; close: string } | 'closed'
-  saturday: { open: string; close: string } | 'closed'
-  sunday: { open: string; close: string } | 'closed'
+  monday: { open: number; close: number } | 'closed'
+  tuesday: { open: number; close: number } | 'closed'
+  wednesday: { open: number; close: number } | 'closed'
+  thursday: { open: number; close: number } | 'closed'
+  friday: { open: number; close: number } | 'closed'
+  saturday: { open: number; close: number } | 'closed'
+  sunday: { open: number; close: number } | 'closed'
 }
 
 interface FormData {
@@ -56,12 +56,12 @@ export default function JoinPage() {
     province: '',
     postalCode: '',
     businessHours: {
-      monday: { open: '0900', close: '1700' },
-      tuesday: { open: '0900', close: '1700' },
-      wednesday: { open: '0900', close: '1700' },
-      thursday: { open: '0900', close: '1700' },
-      friday: { open: '0900', close: '1700' },
-      saturday: { open: '1000', close: '1600' },
+      monday: { open: 900, close: 1700 },
+      tuesday: { open: 900, close: 1700 },
+      wednesday: { open: 900, close: 1700 },
+      thursday: { open: 900, close: 1700 },
+      friday: { open: 900, close: 1700 },
+      saturday: { open: 1000, close: 1600 },
       sunday: 'closed'
     },
     clothingTypes: [] as string[],
@@ -270,27 +270,56 @@ export default function JoinPage() {
         ...prev,
         businessHours: {
           ...prev.businessHours,
-          [day]: { open: '0900', close: '1700' }
+          [day]: { open: 900, close: 1700 }
         }
       }))
     } else if (field === 'open' || field === 'close') {
-      // Convert HH:MM to HHMM format
-      const timeValue = value.toString().replace(':', '')
+      // Convert HH:MM to 4-digit number
+      const timeString = value.toString().replace(':', '')
+      const timeNumber = parseInt(timeString, 10)
       setFormData(prev => ({
         ...prev,
         businessHours: {
           ...prev.businessHours,
           [day]: {
-            ...(typeof prev.businessHours[day] === 'object' ? prev.businessHours[day] : { open: '0900', close: '1700' }),
-            [field]: timeValue
+            ...(typeof prev.businessHours[day] === 'object' ? prev.businessHours[day] : { open: 900, close: 1700 }),
+            [field]: timeNumber
           }
         }
       }))
     }
   }
 
-  // Helper function to convert 4-digit time to HH:MM for input display
-  const formatTimeForInput = (time: string): string => {
+  // Helper function to convert 4-digit number to HH:MM for input display
+  const formatTimeForInput = (time: number): string => {
+    const timeString = time.toString().padStart(4, '0')
+    return `${timeString.slice(0, 2)}:${timeString.slice(2, 4)}`
+  }
+
+  // Helper function to convert HH:MM input to 4-digit number
+  const parseTimeInput = (timeString: string): number => {
+    const cleanTime = timeString.replace(':', '')
+    return parseInt(cleanTime, 10)
+  }
+
+  // Helper function to validate time number
+  const isValidTime = (time: number): boolean => {
+    if (time < 0 || time > 2359) return false
+    const minutes = time % 100
+    const hours = Math.floor(time / 100)
+    return hours <= 23 && minutes <= 59
+  }
+
+  // Helper function to format time for display
+  const formatTimeDisplay = (time: number): string => {
+    const timeString = time.toString().padStart(4, '0')
+    const hours = timeString.slice(0, 2)
+    const minutes = timeString.slice(2, 4)
+    return `${hours}:${minutes}`
+  }
+
+  // Helper function to convert 4-digit number to HH:MM for input display
+  const formatTimeForInputOld = (time: string): string => {
     if (time.length === 4) {
       return `${time.slice(0, 2)}:${time.slice(2, 4)}`
     }
@@ -302,13 +331,13 @@ export default function JoinPage() {
     return formData.businessHours[day] === 'closed'
   }
 
-  // Helper function to get day hours
-  const getDayHours = (day: DayKey): { open: string; close: string } => {
+  // Helper function to get day hours  
+  const getDayHours = (day: DayKey): { open: number; close: number } => {
     const dayData = formData.businessHours[day]
     if (typeof dayData === 'object') {
       return dayData
     }
-    return { open: '0900', close: '1700' }
+    return { open: 900, close: 1700 }
   }
 
   const handleHoursChangeOld = (day: DayKey, field: 'open' | 'close' | 'closed', value: string | boolean) => {
@@ -401,6 +430,13 @@ export default function JoinPage() {
             thursday: { open: '0900', close: '1700' },
             friday: { open: '0900', close: '1700' },
             saturday: { open: '1000', close: '1600' },
+          businessHours: {
+            monday: { open: 900, close: 1700 },
+            tuesday: { open: 900, close: 1700 },
+            wednesday: { open: 900, close: 1700 },
+            thursday: { open: 900, close: 1700 },
+            friday: { open: 900, close: 1700 },
+            saturday: { open: 1000, close: 1600 },
             sunday: 'closed'
           },
           clothingTypes: [],
