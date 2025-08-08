@@ -87,7 +87,22 @@ export default function JoinPage() {
     'Jackets',
     'Hats/Caps',
     'Tote Bags',
-    'Other Apparel'
+    'Other Apparel',
+    'Mugs',
+    'Water Bottles',
+    'Tumblers',
+    'Coffee Cups',
+    'Wine Glasses',
+    'Other Drinkware',
+    'Canvas Prints',
+    'Posters',
+    'Wall Art',
+    'Throw Pillows',
+    'Blankets',
+    'Phone Cases',
+    'Keychains',
+    'Stickers',
+    'Other Home Decor'
   ]
 
   const daysOfWeek = [
@@ -492,9 +507,9 @@ export default function JoinPage() {
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <Shirt className="w-5 h-5 text-primary-600" />
-                  Types of Clothing You Print
+                  Products You Can Print
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {clothingOptions.map((type) => (
                     <label key={type} className="flex items-center space-x-2 cursor-pointer">
                       <input
