@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package, Coffee, Image } from 'lucide-react'
+import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package, Coffee, Image, Loader, AlertCircle } from 'lucide-react'
 import AddressAutocomplete from './AddressAutocomplete'
 
 // Define types for form data
@@ -34,12 +34,16 @@ interface FormData {
   additionalInfo: string
   businessType: string
   ownershipRole: string
+  unitNumber: string
 }
 
 type DayKey = keyof BusinessHours
 
 export default function JoinPage() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [submitMessage, setSubmitMessage] = useState('')
   const [formData, setFormData] = useState<FormData>({
     businessName: '',
     contactName: '',
@@ -66,7 +70,8 @@ export default function JoinPage() {
     equipment: [] as string[],
     additionalInfo: '',
     businessType: '',
-    ownershipRole: ''
+    ownershipRole: '',
+    unitNumber: ''
   })
 
   // Handle address autocomplete selection
@@ -281,42 +286,86 @@ export default function JoinPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus('idle')
+    setSubmitMessage('')
     
-    // Here you would integrate with MS OneDrive Forms or your preferred form handler
-    console.log('Form submitted:', formData)
-    
-    // For now, show a success message
-    alert('Thank you for your interest! We\'ll be in touch within 24 hours to discuss partnership opportunities.')
-    
-    // Reset form
-    setFormData({
-      businessName: '',
-      contactName: '',
-      email: '',
-      phone: '',
-      website: '',
-      address: '',
-      city: '',
-      country: 'CA', // Default to Canada
-      province: '',
-      postalCode: '',
-      businessHours: {
-        monday: { open: '09:00', close: '17:00', closed: false },
-        tuesday: { open: '09:00', close: '17:00', closed: false },
-        wednesday: { open: '09:00', close: '17:00', closed: false },
-        thursday: { open: '09:00', close: '17:00', closed: false },
-        friday: { open: '09:00', close: '17:00', closed: false },
-        saturday: { open: '10:00', close: '16:00', closed: false },
-        sunday: { open: '10:00', close: '16:00', closed: true }
-      },
-      clothingTypes: [] as string[],
-      currentCapacity: '',
-      experience: '',
-      equipment: [] as string[],
-      additionalInfo: '',
-      businessType: '',
-      ownershipRole: ''
-    })
+    try {
+      // Submit to Supabase via Netlify function
+      const response = await fetch('/.netlify/functions/submit-partnership-application', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          businessName: formData.businessName,
+          contactName: formData.contactName,
+          businessType: formData.businessType,
+          ownershipRole: formData.ownershipRole,
+          email: formData.email,
+          phone: formData.phone,
+          website: formData.website,
+          address: formData.address,
+          unitNumber: formData.unitNumber,
+          city: formData.city,
+          country: formData.country,
+          province: formData.province,
+          postalCode: formData.postalCode,
+          businessHours: formData.businessHours,
+          clothingTypes: formData.clothingTypes,
+          currentCapacity: formData.currentCapacity,
+          experience: formData.experience,
+          equipment: formData.equipment,
+          additionalInfo: formData.additionalInfo
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        setSubmitStatus('success')
+        setSubmitMessage(result.message || 'Application submitted successfully!')
+        
+        // Reset form on success
+        setFormData({
+          businessName: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          website: '',
+          address: '',
+          city: '',
+          country: 'CA',
+          province: '',
+          postalCode: '',
+          businessHours: {
+            monday: { open: '09:00', close: '17:00', closed: false },
+            tuesday: { open: '09:00', close: '17:00', closed: false },
+            wednesday: { open: '09:00', close: '17:00', closed: false },
+            thursday: { open: '09:00', close: '17:00', closed: false },
+            friday: { open: '09:00', close: '17:00', closed: false },
+            saturday: { open: '10:00', close: '16:00', closed: false },
+            sunday: { open: '10:00', close: '16:00', closed: true }
+          },
+          clothingTypes: [],
+          currentCapacity: '',
+          experience: '',
+          equipment: [],
+          additionalInfo: '',
+          businessType: '',
+          ownershipRole: ''
+        })
+      } else {
+        setSubmitStatus('error')
+        setSubmitMessage(result.error || 'Failed to submit application. Please try again.')
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      setSubmitStatus('error')
+      setSubmitMessage('Network error. Please check your connection and try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -854,12 +903,46 @@ export default function JoinPage() {
 
               {/* Submit Button */}
               <div className="text-center pt-6">
+                {/* Success Message */}
+                {submitStatus === 'success' && (
+                  <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div className="flex items-center justify-center text-green-800 dark:text-green-200">
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      <span className="font-medium">{submitMessage}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {submitStatus === 'error' && (
+                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <div className="flex items-center justify-center text-red-800 dark:text-red-200">
+                      <AlertCircle className="w-5 h-5 mr-2" />
+                      <span className="font-medium">{submitMessage}</span>
+                    </div>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="bg-primary-600 hover:bg-primary-700 text-white px-12 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2 mx-auto"
+                  disabled={isSubmitting}
+                  className={`px-12 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center gap-2 mx-auto ${
+                    isSubmitting 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-primary-600 hover:bg-primary-700 transform hover:scale-105 hover:shadow-lg'
+                  } text-white`}
                 >
-                  Join the Network
-                  <ArrowRight size={20} />
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="w-5 h-5 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Join the Network
+                      <ArrowRight size={20} />
+                    </>
+                  )}
                 </button>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
                   We'll contact you within 24 hours to discuss partnership opportunities
