@@ -6,13 +6,13 @@ import AddressAutocomplete from './AddressAutocomplete'
 
 // Define types for form data
 interface BusinessHours {
-  monday: { open: string; close: string } | 'closed'
-  tuesday: { open: string; close: string } | 'closed'
-  wednesday: { open: string; close: string } | 'closed'
-  thursday: { open: string; close: string } | 'closed'
-  friday: { open: string; close: string } | 'closed'
-  saturday: { open: string; close: string } | 'closed'
-  sunday: { open: string; close: string } | 'closed'
+  monday: { open: string; close: string; closed?: boolean } | 'closed'
+  tuesday: { open: string; close: string; closed?: boolean } | 'closed'
+  wednesday: { open: string; close: string; closed?: boolean } | 'closed'
+  thursday: { open: string; close: string; closed?: boolean } | 'closed'
+  friday: { open: string; close: string; closed?: boolean } | 'closed'
+  saturday: { open: string; close: string; closed?: boolean } | 'closed'
+  sunday: { open: string; close: string; closed?: boolean } | 'closed'
 }
 
 interface FormData {
@@ -56,13 +56,13 @@ export default function JoinPage() {
     province: '',
     postalCode: '',
     businessHours: {
-      monday: { open: '0900', close: '1700' },
-      tuesday: { open: '0900', close: '1700' },
-      wednesday: { open: '0900', close: '1700' },
-      thursday: { open: '0900', close: '1700' },
-      friday: { open: '0900', close: '1700' },
-      saturday: { open: '1000', close: '1600' },
-      sunday: 'closed'
+      monday: { open: '0900', close: '1700', closed: false },
+      tuesday: { open: '0900', close: '1700', closed: false },
+      wednesday: { open: '0900', close: '1700', closed: false },
+      thursday: { open: '0900', close: '1700', closed: false },
+      friday: { open: '0900', close: '1700', closed: false },
+      saturday: { open: '1000', close: '1600', closed: false },
+      sunday: { open: '1000', close: '1600', closed: true }
     },
     clothingTypes: [] as string[],
     currentCapacity: '',
@@ -255,63 +255,6 @@ export default function JoinPage() {
   }
 
   const handleHoursChange = (day: DayKey, field: 'open' | 'close' | 'closed', value: string | boolean) => {
-    if (field === 'closed' && value === true) {
-      // Set day to closed
-      setFormData(prev => ({
-        ...prev,
-        businessHours: {
-          ...prev.businessHours,
-          [day]: 'closed'
-        }
-      }))
-    } else if (field === 'closed' && value === false) {
-      // Set day to open with default hours
-      setFormData(prev => ({
-        ...prev,
-        businessHours: {
-          ...prev.businessHours,
-          [day]: { open: '0900', close: '1700' }
-        }
-      }))
-    } else if (field === 'open' || field === 'close') {
-      // Convert HH:MM to HHMM format
-      const timeValue = value.toString().replace(':', '')
-      setFormData(prev => ({
-        ...prev,
-        businessHours: {
-          ...prev.businessHours,
-          [day]: {
-            ...(typeof prev.businessHours[day] === 'object' ? prev.businessHours[day] : { open: '0900', close: '1700' }),
-            [field]: timeValue
-          }
-        }
-      }))
-    }
-  }
-
-  // Helper function to convert 4-digit time to HH:MM for input display
-  const formatTimeForInput = (time: string): string => {
-    if (time.length === 4) {
-      return `${time.slice(0, 2)}:${time.slice(2, 4)}`
-    }
-    return time
-  }
-
-  // Helper function to check if a day is closed
-  const isDayClosed = (day: DayKey): boolean => {
-    return formData.businessHours[day] === 'closed'
-  }
-
-  // Helper function to get day hours
-  const getDayHours = (day: DayKey): { open: string; close: string } => {
-    const dayData = formData.businessHours[day]
-    if (typeof dayData === 'object') {
-      return dayData
-    }
-    return { open: '0900', close: '1700' }
-  }
-
-  const handleHoursChangeOld = (day: DayKey, field: 'open' | 'close' | 'closed', value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       businessHours: {
@@ -323,6 +266,7 @@ export default function JoinPage() {
       }
     }))
   }
+
   const handleClothingTypeChange = (type: string) => {
     setFormData(prev => ({
       ...prev,
@@ -395,13 +339,13 @@ export default function JoinPage() {
           province: '',
           postalCode: '',
           businessHours: {
-            monday: { open: '0900', close: '1700' },
-            tuesday: { open: '0900', close: '1700' },
-            wednesday: { open: '0900', close: '1700' },
-            thursday: { open: '0900', close: '1700' },
-            friday: { open: '0900', close: '1700' },
-            saturday: { open: '1000', close: '1600' },
-            sunday: 'closed'
+            monday: { open: '09:00', close: '17:00', closed: false },
+            tuesday: { open: '09:00', close: '17:00', closed: false },
+            wednesday: { open: '09:00', close: '17:00', closed: false },
+            thursday: { open: '09:00', close: '17:00', closed: false },
+            friday: { open: '09:00', close: '17:00', closed: false },
+            saturday: { open: '10:00', close: '16:00', closed: false },
+            sunday: { open: '10:00', close: '16:00', closed: true }
           },
           clothingTypes: [],
           currentCapacity: '',
@@ -768,20 +712,20 @@ export default function JoinPage() {
                         <label className="flex items-center">
                           <input
                             type="checkbox"
-                            checked={isDayClosed(day.key as DayKey)}
+                            checked={formData.businessHours[day.key as DayKey].closed}
                             onChange={(e) => handleHoursChange(day.key as DayKey, 'closed', e.target.checked)}
                             className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                           />
                           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Closed</span>
                         </label>
                         
-                        {!isDayClosed(day.key as DayKey) && (
+                        {!formData.businessHours[day.key as DayKey].closed && (
                           <>
                             <div className="flex items-center gap-2">
                               <label className="text-sm text-gray-600 dark:text-gray-400">Open:</label>
                               <input
                                 type="time"
-                                value={formatTimeForInput(getDayHours(day.key as DayKey).open)}
+                                value={formData.businessHours[day.key as DayKey].open}
                                 onChange={(e) => handleHoursChange(day.key as DayKey, 'open', e.target.value)}
                                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
                               />
@@ -790,7 +734,7 @@ export default function JoinPage() {
                               <label className="text-sm text-gray-600 dark:text-gray-400">Close:</label>
                               <input
                                 type="time"
-                                value={formatTimeForInput(getDayHours(day.key as DayKey).close)}
+                                value={formData.businessHours[day.key as DayKey].close}
                                 onChange={(e) => handleHoursChange(day.key as DayKey, 'close', e.target.value)}
                                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white text-sm"
                               />
