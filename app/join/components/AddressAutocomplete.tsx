@@ -126,7 +126,15 @@ export default function AddressAutocomplete({
     let province = ''
     if (regionContext) {
       // Try short_code first (e.g., "ON", "QC"), then fall back to text
-      province = regionContext.short_code || regionContext.text || ''
+      let rawProvince = regionContext.short_code || regionContext.text || ''
+      
+      // Handle Mapbox format like "CA-ON" -> "ON"
+      if (rawProvince.includes('-')) {
+        const parts = rawProvince.split('-')
+        province = parts[parts.length - 1] // Take the last part (e.g., "ON" from "CA-ON")
+      } else {
+        province = rawProvince
+      }
     }
     
     const country = getContextValue('country') || ''

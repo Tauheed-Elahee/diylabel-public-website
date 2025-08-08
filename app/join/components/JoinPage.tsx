@@ -372,7 +372,7 @@ export default function JoinPage() {
     setSubmitMessage('')
 
     try {
-      const response = await fetch('/api/join', {
+      const response = await fetch('/.netlify/functions/submit-partnership-application', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
