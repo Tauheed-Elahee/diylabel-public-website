@@ -1,0 +1,28 @@
+Question,Required,Type,Options
+Business Name,Yes,Text,
+Contact Person,Yes,Text,
+Business Type,Yes,Choice,"Independent Business, Franchise, Chain Store"
+Your Role (if Franchise/Chain),No,Choice,"Owner/Corporate Representative, Franchisee/Local Owner, Store Manager, Authorized Representative"
+Email Address,Yes,Text,
+Phone Number,Yes,Text,
+Website,No,Text,
+Street Address (Number & Name),Yes,Text,
+Unit/Suite Number,No,Text,
+City,Yes,Text,
+Country,Yes,Choice,"Canada, United States"
+Province/State,Yes,Choice,"Alberta, British Columbia, Manitoba, New Brunswick, Newfoundland and Labrador, Nova Scotia, Ontario, Prince Edward Island, Quebec, Saskatchewan, Northwest Territories, Nunavut, Yukon, Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware, Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana, Maine, Maryland, Massachusetts, Michigan, Minnesota, Mississippi, Missouri, Montana, Nebraska, Nevada, New Hampshire, New Jersey, New Mexico, New York, North Carolina, North Dakota, Ohio, Oklahoma, Oregon, Pennsylvania, Rhode Island, South Carolina, South Dakota, Tennessee, Texas, Utah, Vermont, Virginia, Washington, West Virginia, Wisconsin, Wyoming, District of Columbia"
+Postal/ZIP Code,Yes,Text,
+Monday Hours,No,Choice,"Closed, 6:00 AM - 2:00 PM, 7:00 AM - 3:00 PM, 8:00 AM - 4:00 PM, 9:00 AM - 5:00 PM, 10:00 AM - 6:00 PM, 11:00 AM - 7:00 PM, 12:00 PM - 8:00 PM, Custom hours (specify in Additional Information)"
+Tuesday Hours,No,Choice,"Closed, 6:00 AM - 2:00 PM, 7:00 AM - 3:00 PM, 8:00 AM - 4:00 PM, 9:00 AM - 5:00 PM, 10:00 AM - 6:00 PM, 11:00 AM - 7:00 PM, 12:00 PM - 8:00 PM, Custom hours (specify in Additional Information)"
+Wednesday Hours,No,Choice,"Closed, 6:00 AM - 2:00 PM, 7:00 AM - 3:00 PM, 8:00 AM - 4:00 PM, 9:00 AM - 5:00 PM, 10:00 AM - 6:00 PM, 11:00 AM - 7:00 PM, 12:00 PM - 8:00 PM, Custom hours (specify in Additional Information)"
+Thursday Hours,No,Choice,"Closed, 6:00 AM - 2:00 PM, 7:00 AM - 3:00 PM, 8:00 AM - 4:00 PM, 9:00 AM - 5:00 PM, 10:00 AM - 6:00 PM, 11:00 AM - 7:00 PM, 12:00 PM - 8:00 PM, Custom hours (specify in Additional Information)"
+Friday Hours,No,Choice,"Closed, 6:00 AM - 2:00 PM, 7:00 AM - 3:00 PM, 8:00 AM - 4:00 PM, 9:00 AM - 5:00 PM, 10:00 AM - 6:00 PM, 11:00 AM - 7:00 PM, 12:00 PM - 8:00 PM, Custom hours (specify in Additional Information)"
+Saturday Hours,No,Choice,"Closed, 6:00 AM - 2:00 PM, 7:00 AM - 3:00 PM, 8:00 AM - 4:00 PM, 9:00 AM - 5:00 PM, 10:00 AM - 6:00 PM, 11:00 AM - 7:00 PM, 12:00 PM - 8:00 PM, Custom hours (specify in Additional Information)"
+Sunday Hours,No,Choice,"Closed, 6:00 AM - 2:00 PM, 7:00 AM - 3:00 PM, 8:00 AM - 4:00 PM, 9:00 AM - 5:00 PM, 10:00 AM - 6:00 PM, 11:00 AM - 7:00 PM, 12:00 PM - 8:00 PM, Custom hours (specify in Additional Information)"
+Apparel Products,No,Multiple Choice,"T-Shirts, Hoodies, Sweatshirts, Tank Tops, Long Sleeves, Polo Shirts, Jackets, Hats/Caps, Tote Bags, Other Apparel"
+Drinkware Products,No,Multiple Choice,"Mugs, Water Bottles, Tumblers, Coffee Cups, Wine Glasses, Other Drinkware"
+Home Decor Products,No,Multiple Choice,"Canvas Prints, Posters, Wall Art, Throw Pillows, Blankets, Phone Cases, Keychains, Stickers, Other Home Decor"
+Current Daily Capacity,No,Choice,"1-10 items per day, 11-25 items per day, 26-50 items per day, 51-100 items per day, 100+ items per day"
+Years in Business,No,Choice,"Less than 1 year, 1-3 years, 4-7 years, 8-15 years, 15+ years"
+Equipment & Technology,No,Multiple Choice,"Screen Printing Press, DTG Printer, Heat Press, Embroidery Machine, Vinyl Cutter, Sublimation Printer, Large Format Printer, Laser Engraver, Automatic Press, Manual Press, Conveyor Dryer, Other Equipment"
+Additional Information,No,Long Text,
