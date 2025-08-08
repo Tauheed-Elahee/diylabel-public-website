@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package, Coffee } from 'lucide-react'
+import { ArrowRight, Play, CheckCircle, Printer, Users, TrendingUp, DollarSign, Clock, MapPin, Phone, Mail, Globe, Shirt, Package, Coffee, Image } from 'lucide-react'
 
 // Define types for form data
 interface BusinessHours {
@@ -561,7 +561,7 @@ export default function JoinPage() {
                 {/* Home Decor Section */}
                 <div>
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-primary-600" />
+                    <Image className="w-4 h-4 text-primary-600" />
                     Home Decor
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
