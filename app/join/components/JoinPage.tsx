@@ -442,14 +442,14 @@ export default function JoinPage() {
                 </h3>
                 <div className="space-y-3">
                   {daysOfWeek.map((day) => (
-                    <div key={day.key} className="flex items-center gap-4 p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div key={day.key} className="flex items-center gap-4 p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 min-h-[72px]">
                       <div className="w-24 flex-shrink-0">
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {day.label}
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-3 flex-1">
+                      <div className="flex items-center gap-3 flex-1 min-h-[40px]">
                         <label className="flex items-center">
                           <input
                             type="checkbox"
