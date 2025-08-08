@@ -46,6 +46,7 @@ export default function JoinPage() {
     website: '',
     address: '',
     city: '',
+    country: 'CA', // Default to Canada
     province: '',
     postalCode: '',
     businessHours: {
@@ -65,6 +66,100 @@ export default function JoinPage() {
     businessType: '',
     ownershipRole: ''
   })
+
+  // Get provinces/states based on selected country
+  const getProvincesForCountry = (countryCode: string) => {
+    if (countryCode === 'CA') {
+      return [
+        { code: 'AB', name: 'Alberta' },
+        { code: 'BC', name: 'British Columbia' },
+        { code: 'MB', name: 'Manitoba' },
+        { code: 'NB', name: 'New Brunswick' },
+        { code: 'NL', name: 'Newfoundland and Labrador' },
+        { code: 'NS', name: 'Nova Scotia' },
+        { code: 'ON', name: 'Ontario' },
+        { code: 'PE', name: 'Prince Edward Island' },
+        { code: 'QC', name: 'Quebec' },
+        { code: 'SK', name: 'Saskatchewan' },
+        { code: 'NT', name: 'Northwest Territories' },
+        { code: 'NU', name: 'Nunavut' },
+        { code: 'YT', name: 'Yukon' }
+      ]
+    } else if (countryCode === 'US') {
+      return [
+        { code: 'AL', name: 'Alabama' },
+        { code: 'AK', name: 'Alaska' },
+        { code: 'AZ', name: 'Arizona' },
+        { code: 'AR', name: 'Arkansas' },
+        { code: 'CA', name: 'California' },
+        { code: 'CO', name: 'Colorado' },
+        { code: 'CT', name: 'Connecticut' },
+        { code: 'DE', name: 'Delaware' },
+        { code: 'FL', name: 'Florida' },
+        { code: 'GA', name: 'Georgia' },
+        { code: 'HI', name: 'Hawaii' },
+        { code: 'ID', name: 'Idaho' },
+        { code: 'IL', name: 'Illinois' },
+        { code: 'IN', name: 'Indiana' },
+        { code: 'IA', name: 'Iowa' },
+        { code: 'KS', name: 'Kansas' },
+        { code: 'KY', name: 'Kentucky' },
+        { code: 'LA', name: 'Louisiana' },
+        { code: 'ME', name: 'Maine' },
+        { code: 'MD', name: 'Maryland' },
+        { code: 'MA', name: 'Massachusetts' },
+        { code: 'MI', name: 'Michigan' },
+        { code: 'MN', name: 'Minnesota' },
+        { code: 'MS', name: 'Mississippi' },
+        { code: 'MO', name: 'Missouri' },
+        { code: 'MT', name: 'Montana' },
+        { code: 'NE', name: 'Nebraska' },
+        { code: 'NV', name: 'Nevada' },
+        { code: 'NH', name: 'New Hampshire' },
+        { code: 'NJ', name: 'New Jersey' },
+        { code: 'NM', name: 'New Mexico' },
+        { code: 'NY', name: 'New York' },
+        { code: 'NC', name: 'North Carolina' },
+        { code: 'ND', name: 'North Dakota' },
+        { code: 'OH', name: 'Ohio' },
+        { code: 'OK', name: 'Oklahoma' },
+        { code: 'OR', name: 'Oregon' },
+        { code: 'PA', name: 'Pennsylvania' },
+        { code: 'RI', name: 'Rhode Island' },
+        { code: 'SC', name: 'South Carolina' },
+        { code: 'SD', name: 'South Dakota' },
+        { code: 'TN', name: 'Tennessee' },
+        { code: 'TX', name: 'Texas' },
+        { code: 'UT', name: 'Utah' },
+        { code: 'VT', name: 'Vermont' },
+        { code: 'VA', name: 'Virginia' },
+        { code: 'WA', name: 'Washington' },
+        { code: 'WV', name: 'West Virginia' },
+        { code: 'WI', name: 'Wisconsin' },
+        { code: 'WY', name: 'Wyoming' },
+        { code: 'DC', name: 'District of Columbia' }
+      ]
+    } else {
+      // For other countries, return empty array (could be expanded later)
+      return []
+    }
+  }
+
+  // Get available countries (focusing on North America initially)
+  const availableCountries = [
+    { code: 'CA', name: 'Canada' },
+    { code: 'US', name: 'United States' }
+  ]
+
+  // Handle country change and reset province
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCountry = e.target.value
+    setFormData(prev => ({
+      ...prev,
+      country: newCountry,
+      province: '' // Reset province when country changes
+    }))
+  }
 
   const equipmentOptions = [
     'Screen Printing Press',
@@ -181,6 +276,7 @@ export default function JoinPage() {
       website: '',
       address: '',
       city: '',
+      country: 'CA', // Default to Canada
       province: '',
       postalCode: '',
       businessHours: {
@@ -455,8 +551,28 @@ export default function JoinPage() {
                     />
                   </div>
                   <div>
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Country *
+                    </label>
+                    <select
+                      id="country"
+                      name="country"
+                      required
+                      value={formData.country}
+                      onChange={handleCountryChange}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select Country</option>
+                      {availableCountries.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
                     <label htmlFor="province" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Province *
+                      {formData.country === 'US' ? 'State *' : 'Province *'}
                     </label>
                     <select
                       id="province"
@@ -465,26 +581,21 @@ export default function JoinPage() {
                       value={formData.province}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      disabled={!formData.country}
                     >
-                      <option value="">Select Province</option>
-                      <option value="AB">Alberta</option>
-                      <option value="BC">British Columbia</option>
-                      <option value="MB">Manitoba</option>
-                      <option value="NB">New Brunswick</option>
-                      <option value="NL">Newfoundland and Labrador</option>
-                      <option value="NS">Nova Scotia</option>
-                      <option value="ON">Ontario</option>
-                      <option value="PE">Prince Edward Island</option>
-                      <option value="QC">Quebec</option>
-                      <option value="SK">Saskatchewan</option>
-                      <option value="NT">Northwest Territories</option>
-                      <option value="NU">Nunavut</option>
-                      <option value="YT">Yukon</option>
+                      <option value="">
+                        {formData.country === 'US' ? 'Select State' : 'Select Province'}
+                      </option>
+                      {getProvincesForCountry(formData.country).map((province) => (
+                        <option key={province.code} value={province.code}>
+                          {province.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
-                  <div className="md:col-span-2">
+                  <div>
                     <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Postal Code *
+                      {formData.country === 'US' ? 'ZIP Code *' : 'Postal Code *'}
                     </label>
                     <input
                       type="text"
@@ -494,7 +605,7 @@ export default function JoinPage() {
                       value={formData.postalCode}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="K1A 0A6"
+                      placeholder={formData.country === 'US' ? '12345' : 'K1A 0A6'}
                     />
                   </div>
                 </div>
