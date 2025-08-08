@@ -540,7 +540,7 @@ export default function JoinPage() {
                 {/* Drinkware Section */}
                 <div className="mb-6">
                   <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
-                    <Package className="w-4 h-4 text-primary-600" />
+                    🥃
                     Drinkware
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
