@@ -106,8 +106,15 @@ export default function AddressAutocomplete({
     const streetAddress = streetNumber ? `${streetNumber} ${streetName}` : streetName
     
     const city = getContextValue('place') || getContextValue('locality') || ''
+    
+    // Enhanced province/state detection
     const regionContext = context.find((c: any) => c.id.includes('region'))
-    const province = regionContext ? regionContext.short_code || regionContext.text : ''
+    let province = ''
+    if (regionContext) {
+      // Try short_code first (e.g., "ON", "CA"), then fall back to text
+      province = regionContext.short_code || regionContext.text || ''
+    }
+    
     const country = getContextValue('country') || ''
     const postalCode = getContextValue('postcode') || ''
 
@@ -121,11 +128,12 @@ export default function AddressAutocomplete({
       countryCode = country
     }
 
-    // Convert province name to proper code for the selected country
+    // Enhanced province/state code conversion
     let provinceCode = ''
     if (countryCode === 'CA') {
       // Canadian provinces mapping
       const canadianProvinces: { [key: string]: string } = {
+        // Full names
         'alberta': 'AB',
         'british columbia': 'BC',
         'manitoba': 'MB',
@@ -135,15 +143,33 @@ export default function AddressAutocomplete({
         'ontario': 'ON',
         'prince edward island': 'PE',
         'quebec': 'QC',
+        'québec': 'QC',
         'saskatchewan': 'SK',
         'northwest territories': 'NT',
         'nunavut': 'NU',
-        'yukon': 'YT'
+        'yukon': 'YT',
+        // Short codes (in case Mapbox returns these)
+        'ab': 'AB',
+        'bc': 'BC',
+        'mb': 'MB',
+        'nb': 'NB',
+        'nl': 'NL',
+        'ns': 'NS',
+        'on': 'ON',
+        'pe': 'PE',
+        'qc': 'QC',
+        'sk': 'SK',
+        'nt': 'NT',
+        'nu': 'NU',
+        'yt': 'YT'
       }
-      provinceCode = canadianProvinces[province.toLowerCase()] || province
+      
+      // Try exact match first, then lowercase match
+      provinceCode = canadianProvinces[province] || canadianProvinces[province.toLowerCase()] || province
     } else if (countryCode === 'US') {
       // US states mapping (common ones)
       const usStates: { [key: string]: string } = {
+        // Full names
         'california': 'CA',
         'new york': 'NY',
         'texas': 'TX',
@@ -194,12 +220,30 @@ export default function AddressAutocomplete({
         'alaska': 'AK',
         'vermont': 'VT',
         'wyoming': 'WY',
-        'district of columbia': 'DC'
+        'district of columbia': 'DC',
+        // Short codes (in case Mapbox returns these)
+        'ca': 'CA', 'ny': 'NY', 'tx': 'TX', 'fl': 'FL', 'il': 'IL',
+        'pa': 'PA', 'oh': 'OH', 'ga': 'GA', 'nc': 'NC', 'mi': 'MI',
+        'nj': 'NJ', 'va': 'VA', 'wa': 'WA', 'az': 'AZ', 'ma': 'MA',
+        'tn': 'TN', 'in': 'IN', 'mo': 'MO', 'md': 'MD', 'wi': 'WI',
+        'co': 'CO', 'mn': 'MN', 'sc': 'SC', 'al': 'AL', 'la': 'LA',
+        'ky': 'KY', 'or': 'OR', 'ok': 'OK', 'ct': 'CT', 'ut': 'UT',
+        'ia': 'IA', 'nv': 'NV', 'ar': 'AR', 'ms': 'MS', 'ks': 'KS',
+        'nm': 'NM', 'ne': 'NE', 'wv': 'WV', 'id': 'ID', 'hi': 'HI',
+        'nh': 'NH', 'me': 'ME', 'mt': 'MT', 'ri': 'RI', 'de': 'DE',
+        'sd': 'SD', 'nd': 'ND', 'ak': 'AK', 'vt': 'VT', 'wy': 'WY',
+        'dc': 'DC'
       }
-      provinceCode = usStates[province.toLowerCase()] || province
+      
+      // Try exact match first, then lowercase match
+      provinceCode = usStates[province] || usStates[province.toLowerCase()] || province
+    } else {
+      // For other countries, use the province as-is
+      provinceCode = province
     }
 
     const addressData = {
+      fullAddress: suggestion.place_name,
       streetAddress: streetAddress,
       city: city,
       province: provinceCode,
@@ -207,6 +251,11 @@ export default function AddressAutocomplete({
       postalCode: postalCode
     }
 
+    console.log('Address selected:', {
+      original: suggestion,
+      parsed: addressData,
+      regionContext: regionContext
+    })
     onAddressSelect(addressData)
     
     if (onChange) {
