@@ -346,13 +346,12 @@ export default function JoinPage() {
     setIsSubmitting(true)
     setSubmitStatus('idle')
     setSubmitMessage('')
-          monday: { open: '0900', close: '1700' },
-          tuesday: { open: '0900', close: '1700' },
-          wednesday: { open: '0900', close: '1700' },
-          thursday: { open: '0900', close: '1700' },
-          friday: { open: '0900', close: '1700' },
-          saturday: { open: '1000', close: '1600' },
-          sunday: 'closed'
+
+    try {
+      const response = await fetch('/api/join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           businessName: formData.businessName,
@@ -396,13 +395,13 @@ export default function JoinPage() {
           province: '',
           postalCode: '',
           businessHours: {
-            monday: { open: '09:00', close: '17:00', closed: false },
-            tuesday: { open: '09:00', close: '17:00', closed: false },
-            wednesday: { open: '09:00', close: '17:00', closed: false },
-            thursday: { open: '09:00', close: '17:00', closed: false },
-            friday: { open: '09:00', close: '17:00', closed: false },
-            saturday: { open: '10:00', close: '16:00', closed: false },
-            sunday: { open: '10:00', close: '16:00', closed: true }
+            monday: { open: '0900', close: '1700' },
+            tuesday: { open: '0900', close: '1700' },
+            wednesday: { open: '0900', close: '1700' },
+            thursday: { open: '0900', close: '1700' },
+            friday: { open: '0900', close: '1700' },
+            saturday: { open: '1000', close: '1600' },
+            sunday: 'closed'
           },
           clothingTypes: [],
           currentCapacity: '',
@@ -410,7 +409,8 @@ export default function JoinPage() {
           equipment: [],
           additionalInfo: '',
           businessType: '',
-          ownershipRole: ''
+          ownershipRole: '',
+          unitNumber: ''
         })
       } else {
         setSubmitStatus('error')
