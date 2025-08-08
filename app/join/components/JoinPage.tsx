@@ -554,6 +554,20 @@ export default function JoinPage() {
                     />
                   </div>
                   <div>
+                    <label htmlFor="unitNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Unit/Suite Number
+                    </label>
+                    <input
+                      type="text"
+                      id="unitNumber"
+                      name="unitNumber"
+                      value={formData.unitNumber}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="Unit 101, Suite A, etc."
+                    />
+                  </div>
+                  <div>
                     <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       City *
                     </label>
