@@ -6,13 +6,13 @@ import AddressAutocomplete from './AddressAutocomplete'
 
 // Define types for form data
 interface BusinessHours {
-  monday: { open: number; close: number } | 'closed'
-  tuesday: { open: number; close: number } | 'closed'
-  wednesday: { open: number; close: number } | 'closed'
-  thursday: { open: number; close: number } | 'closed'
-  friday: { open: number; close: number } | 'closed'
-  saturday: { open: number; close: number } | 'closed'
-  sunday: { open: number; close: number } | 'closed'
+  monday: { open: number; close: number } | boolean
+  tuesday: { open: number; close: number } | boolean
+  wednesday: { open: number; close: number } | boolean
+  thursday: { open: number; close: number } | boolean
+  friday: { open: number; close: number } | boolean
+  saturday: { open: number; close: number } | boolean
+  sunday: { open: number; close: number } | boolean
 }
 
 interface FormData {
@@ -62,7 +62,7 @@ export default function JoinPage() {
       thursday: { open: 900, close: 1700 },
       friday: { open: 900, close: 1700 },
       saturday: { open: 1000, close: 1600 },
-      sunday: 'closed'
+      sunday: false
     },
     clothingTypes: [] as string[],
     currentCapacity: '',
@@ -254,17 +254,26 @@ export default function JoinPage() {
     }))
   }
 
-  const handleHoursChange = (day: DayKey, field: 'open' | 'close' | 'closed', value: string | boolean) => {
+  const handleHoursChange = (day: DayKey, field: 'open' | 'close' | 'closed' | '24hour', value: string | boolean) => {
     if (field === 'closed' && value === true) {
-      // Set day to closed
+      // Set day to closed (false)
       setFormData(prev => ({
         ...prev,
         businessHours: {
           ...prev.businessHours,
-          [day]: 'closed'
+          [day]: false
         }
       }))
-    } else if (field === 'closed' && value === false) {
+    } else if (field === '24hour' && value === true) {
+      // Set day to 24 hours (true)
+      setFormData(prev => ({
+        ...prev,
+        businessHours: {
+          ...prev.businessHours,
+          [day]: true
+        }
+      }))
+    } else if ((field === 'closed' || field === '24hour') && value === false) {
       // Set day to open with default hours
       setFormData(prev => ({
         ...prev,
@@ -275,8 +284,7 @@ export default function JoinPage() {
       }))
     } else if (field === 'open' || field === 'close') {
       // Convert HH:MM to 4-digit number
-      const timeString = value.toString().replace(':', '')
-      const timeNumber = parseInt(timeString, 10)
+      const timeNumber = parseTimeInput(value.toString())
       setFormData(prev => ({
         ...prev,
         businessHours: {
@@ -328,7 +336,12 @@ export default function JoinPage() {
 
   // Helper function to check if a day is closed
   const isDayClosed = (day: DayKey): boolean => {
-    return formData.businessHours[day] === 'closed'
+    return formData.businessHours[day] === false
+  }
+
+  // Helper function to check if a day is 24 hours
+  const isDay24Hours = (day: DayKey): boolean => {
+    return formData.businessHours[day] === true
   }
 
   // Helper function to get day hours  
@@ -430,7 +443,7 @@ export default function JoinPage() {
             thursday: { open: 900, close: 1700 },
             friday: { open: 900, close: 1700 },
             saturday: { open: 1000, close: 1600 },
-            sunday: 'closed'
+            sunday: false
           },
           clothingTypes: [],
           currentCapacity: '',
@@ -804,7 +817,17 @@ export default function JoinPage() {
                           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">Closed</span>
                         </label>
                         
-                        {!isDayClosed(day.key as DayKey) && (
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={isDay24Hours(day.key as DayKey)}
+                            onChange={(e) => handleHoursChange(day.key as DayKey, '24hour', e.target.checked)}
+                            className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                          />
+                          <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">24 Hours</span>
+                        </label>
+                        
+                        {!isDayClosed(day.key as DayKey) && !isDay24Hours(day.key as DayKey) && (
                           <>
                             <div className="flex items-center gap-2">
                               <label className="text-sm text-gray-600 dark:text-gray-400">Open:</label>

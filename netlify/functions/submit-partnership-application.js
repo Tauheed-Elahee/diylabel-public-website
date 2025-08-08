@@ -151,7 +151,14 @@ exports.handler = async (event, context) => {
       for (const day of validDays) {
         if (businessHours[day]) {
           const dayData = businessHours[day];
-          if (dayData !== 'closed' && typeof dayData === 'object') {
+          
+          // Skip boolean values (true = 24hr, false = closed)
+          if (typeof dayData === 'boolean') {
+            continue;
+          }
+          
+          // Validate object format for specific hours
+          if (typeof dayData === 'object') {
             // Validate 4-digit time numbers
             const openTime = parseInt(dayData.open);
             const closeTime = parseInt(dayData.close);
@@ -204,6 +211,15 @@ exports.handler = async (event, context) => {
                 })
               };
             }
+          } else {
+            // Day data is neither boolean nor object
+            return {
+              statusCode: 400,
+              headers: corsHeaders,
+              body: JSON.stringify({ 
+                error: `Invalid format for ${day}. Must be boolean (true/false) or object with open/close times.` 
+              })
+            };
           }
         }
       }
