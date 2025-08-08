@@ -365,6 +365,26 @@ export default function JoinPage() {
     }))
   }
 
+  // Format phone number as user types
+  const formatPhoneNumber = (value: string): string => {
+    // Remove all non-digits
+    const phoneNumber = value.replace(/\D/g, '')
+    
+    // Format based on length
+    if (phoneNumber.length === 0) return ''
+    if (phoneNumber.length <= 3) return `(${phoneNumber}`
+    if (phoneNumber.length <= 6) return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`
+  }
+
+  // Handle phone number input with formatting
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value)
+    setFormData(prev => ({
+      ...prev,
+      phone: formatted
+    }))
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -642,9 +662,10 @@ export default function JoinPage() {
                       name="phone"
                       required
                       value={formData.phone}
-                      onChange={handleInputChange}
+                      onChange={handlePhoneChange}
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="(555) 123-4567"
+                      maxLength={14}
                     />
                   </div>
                   <div className="md:col-span-2">
