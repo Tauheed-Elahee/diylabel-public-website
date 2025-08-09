@@ -22,6 +22,10 @@ export interface PrintShop {
 export const printShopService = {
   // Get all print shops
   async getAll(): Promise<PrintShop[]> {
+    if (!supabase) {
+      throw new Error('Supabase not configured')
+    }
+
     const { data, error } = await supabase
       .from('print_shops')
       .select('*')
@@ -37,6 +41,10 @@ export const printShopService = {
 
   // Get print shops within a radius of coordinates
   async getNearby(lat: number, lng: number, radiusKm: number = 50): Promise<PrintShop[]> {
+    if (!supabase) {
+      throw new Error('Supabase not configured')
+    }
+
     // Using Haversine formula in SQL for distance calculation
     const { data, error } = await supabase
       .rpc('get_nearby_print_shops', {
@@ -56,6 +64,10 @@ export const printShopService = {
 
   // Search print shops by text
   async search(searchTerm: string): Promise<PrintShop[]> {
+    if (!supabase) {
+      throw new Error('Supabase not configured')
+    }
+
     if (!searchTerm.trim()) {
       return this.getAll()
     }
@@ -76,6 +88,10 @@ export const printShopService = {
 
   // Get print shop by ID
   async getById(id: number): Promise<PrintShop | null> {
+    if (!supabase) {
+      throw new Error('Supabase not configured')
+    }
+
     const { data, error } = await supabase
       .from('print_shops')
       .select('*')
