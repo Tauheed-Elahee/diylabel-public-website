@@ -22,44 +22,6 @@ export function usePrintShops(options: UsePrintShopsOptions = {}) {
   // Fetch print shops from Supabase
   useEffect(() => {
     async function fetchPrintShops() {
-      // Check if Supabase is configured
-      if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured, using mock data')
-        // Use mock data when Supabase isn't configured
-        const mockShops: PrintShop[] = [
-          {
-            id: 1,
-            name: 'Quick Print Solutions',
-            lat: 45.4215,
-            lng: -75.6972,
-            address: '123 Bank St, Ottawa, ON',
-            specialty: 'Business Cards & Flyers',
-            rating: 4.8
-          },
-          {
-            id: 2,
-            name: 'Creative Print Studio',
-            lat: 45.4165,
-            lng: -75.7040,
-            address: '456 Somerset St, Ottawa, ON',
-            specialty: 'Custom Labels & Stickers',
-            rating: 4.6
-          },
-          {
-            id: 3,
-            name: 'Express Print Hub',
-            lat: 45.4280,
-            lng: -75.6890,
-            address: '789 Rideau St, Ottawa, ON',
-            specialty: 'Large Format Printing',
-            rating: 4.7
-          }
-        ]
-        setPrintShops(mockShops)
-        setLoading(false)
-        return
-      }
-
       try {
         setLoading(true)
         setError(null)
