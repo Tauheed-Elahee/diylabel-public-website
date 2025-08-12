@@ -2,16 +2,85 @@
 
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
-import { Sun, Moon, Menu, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Sun, Moon, Menu, X, User, LogOut } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
+import { User as SupabaseUser } from '@supabase/supabase-js'
 
 export default function Header() {
   const [mounted, setMounted] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [subscription, setSubscription] = useState<any>(null)
   const { theme, setTheme } = useTheme()
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
+    
+    // Get initial user
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      
+      if (user) {
+        // Fetch subscription data
+        const { data: subscriptionData } = await supabase
+          .from('stripe_user_subscriptions')
+          .select('*')
+          .maybeSingle()
+        
+        setSubscription(subscriptionData)
+      }
+    }
+    
+    getUser()
+
+    // Listen for auth changes
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user ?? null)
+        
+        if (session?.user) {
+          // Fetch subscription data for logged in user
+          const { data: subscriptionData } = await supabase
+            .from('stripe_user_subscriptions')
+            .select('*')
+            .maybeSingle()
+          
+          setSubscription(subscriptionData)
+        } else {
+          setSubscription(null)
+        }
+      }
+    )
+
+    return () => {
+      authSubscription.unsubscribe()
+    }
   }, [])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    setSubscription(null)
+    router.push('/')
+  }
+
+  const getSubscriptionPlanName = () => {
+    if (!subscription?.price_id) return null
+    
+    // Import products dynamically to avoid build issues
+    const products = [
+      {
+        priceId: 'price_1RvKtn2Ni4rxWswrkI3Edrsf',
+        name: 'DIY Label Crowdfund',
+      }
+    ]
+    
+    const product = products.find(p => p.priceId === subscription.price_id)
+    return product?.name || 'Active Plan'
+  }
 
   if (!mounted) {
     return null
@@ -41,9 +110,27 @@ export default function Header() {
               <a href="/#map" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium transition-colors">
                 Find Print Shops
               </a>
-              <a href="/join" className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                Join
-              </a>
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  {subscription && getSubscriptionPlanName() && (
+                    <span className="text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-2 py-1 rounded-full">
+                      {getSubscriptionPlanName()}
+                    </span>
+                  )}
+                  <a href="/dashboard" className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Dashboard
+                  </a>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <a href="/auth/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 text-sm font-medium transition-colors">
+                    Sign In
+                  </a>
+                  <a href="/join" className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Join
+                  </a>
+                </div>
+              )}
             </div>
           </nav>
 
@@ -83,9 +170,36 @@ export default function Header() {
               <a href="/#map" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 Find Print Shops
               </a>
-              <a href="/join" className="block px-3 py-2 text-base font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors mx-3 text-center">
-                Join
-              </a>
+              {user ? (
+                <>
+                  {subscription && getSubscriptionPlanName() && (
+                    <div className="px-3 py-2">
+                      <span className="text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-2 py-1 rounded-full">
+                        {getSubscriptionPlanName()}
+                      </span>
+                    </div>
+                  )}
+                  <a href="/dashboard" className="block px-3 py-2 text-base font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors mx-3 text-center">
+                    Dashboard
+                  </a>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 inline mr-2" />
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <a href="/auth/login" className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                    Sign In
+                  </a>
+                  <a href="/join" className="block px-3 py-2 text-base font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors mx-3 text-center">
+                    Join
+                  </a>
+                </>
+              )}
             </div>
           </div>
         )}
