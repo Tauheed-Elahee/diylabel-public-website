@@ -205,7 +205,7 @@ export default function DashboardContent() {
                     <button
                       onClick={() => handleCheckout(product.priceId, product.mode)}
                       disabled={checkoutLoading === product.priceId}
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                       {checkoutLoading === product.priceId ? (
                         <>
@@ -213,7 +213,7 @@ export default function DashboardContent() {
                           Processing...
                         </>
                       ) : (
-                        `Purchase ${product.mode === 'subscription' ? 'Subscription' : 'Now'}`
+                        product.mode === 'subscription' ? 'Subscribe' : 'Support Development'
                       )}
                     </button>
                   </div>

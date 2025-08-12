@@ -7,9 +7,9 @@ export interface Product {
 
 export const products: Product[] = [
   {
-    priceId: 'price_1RvKtn2Ni4rxWswrkI3Edrsf',
+    priceId: 'price_1RvL2S2Ni4rxWswrHkNcLetB',
     name: 'DIY Label Crowdfund',
-    description: 'Help crowdfund the development of DIY Label.',
+    description: 'Crowdfund development of DIY Label, a platform that redirects online print-on-demand orders to local neighbourhood print shops. Suggested amount: typical cost of a print-on-demand T-shirt.',
     mode: 'payment',
   },
 ];

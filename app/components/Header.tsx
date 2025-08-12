@@ -70,10 +70,10 @@ export default function Header() {
   const getSubscriptionPlanName = () => {
     if (!subscription?.price_id) return null
     
-    // Import products dynamically to avoid build issues
+    // Import products from stripe config
     const products = [
       {
-        priceId: 'price_1RvKtn2Ni4rxWswrkI3Edrsf',
+        priceId: 'price_1RvL2S2Ni4rxWswrHkNcLetB',
         name: 'DIY Label Crowdfund',
       }
     ]
