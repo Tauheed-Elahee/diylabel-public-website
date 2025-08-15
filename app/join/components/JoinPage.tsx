@@ -74,27 +74,6 @@ export default function JoinPage() {
     unitNumber: ''
   })
 
-  // Handle select all for product categories
-  const handleSelectAll = (category: 'apparel' | 'drinkware' | 'homeDecor') => {
-    const categoryOptions = {
-      apparel: ['T-Shirts', 'Hoodies', 'Sweatshirts', 'Tank Tops', 'Long Sleeves', 'Polo Shirts', 'Jackets', 'Hats/Caps', 'Tote Bags'],
-      drinkware: ['Mugs', 'Water Bottles', 'Tumblers', 'Coffee Cups', 'Wine Glasses'],
-      homeDecor: ['Canvas Prints', 'Posters', 'Wall Art', 'Throw Pillows', 'Blankets', 'Phone Cases', 'Keychains', 'Stickers']
-    }
-
-    const optionsToAdd = categoryOptions[category]
-    
-    setFormData(prev => ({
-      ...prev,
-      clothingTypes: [
-        // Remove existing items from this category (including "Other" items)
-        ...prev.clothingTypes.filter(item => !optionsToAdd.includes(item) && !item.includes('Other')),
-        // Add all items from this category (excluding "Other")
-        ...optionsToAdd
-      ]
-    }))
-  }
-
   // Handle address autocomplete selection
   const handleAddressSelect = (addressData: {
     fullAddress: string
@@ -406,27 +385,6 @@ export default function JoinPage() {
       phone: formatted
     }))
   }
-  }
-
-  // Handle select all for product categories
-  const handleSelectAll = (category: 'apparel' | 'drinkware' | 'homeDecor') => {
-    const categoryOptions = {
-      apparel: ['T-Shirts', 'Hoodies', 'Sweatshirts', 'Tank Tops', 'Long Sleeves', 'Polo Shirts', 'Jackets', 'Hats/Caps', 'Tote Bags'],
-      drinkware: ['Mugs', 'Water Bottles', 'Tumblers', 'Coffee Cups', 'Wine Glasses'],
-      homeDecor: ['Canvas Prints', 'Posters', 'Wall Art', 'Throw Pillows', 'Blankets', 'Phone Cases', 'Keychains', 'Stickers']
-    }
-
-    const optionsToSelect = categoryOptions[category]
-    
-    setFormData(prev => ({
-      ...prev,
-      clothingTypes: [
-        ...prev.clothingTypes.filter(item => !categoryOptions[category].includes(item) && !item.startsWith('Other')),
-        ...optionsToSelect
-      ]
-    }))
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -909,19 +867,10 @@ export default function JoinPage() {
                 
                 {/* Apparel Section */}
                 <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                      <Shirt className="w-4 h-4 text-primary-600" />
-                      Apparel
-                    </h4>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectAll('apparel')}
-                      className="text-xs px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors"
-                    >
-                      Select All
-                    </button>
-                  </div>
+                  <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                    <Shirt className="w-4 h-4 text-primary-600" />
+                    Apparel
+                  </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                     {productCategories.apparel.map((type) => (
                       <label key={type} className="flex items-center space-x-2 cursor-pointer">
@@ -939,19 +888,10 @@ export default function JoinPage() {
 
                 {/* Drinkware Section */}
                 <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                      <Coffee className="w-4 h-4 text-primary-600" />
-                      Drinkware
-                    </h4>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectAll('drinkware')}
-                      className="text-xs px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors"
-                    >
-                      Select All
-                    </button>
-                  </div>
+                  <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                    <Coffee className="w-4 h-4 text-primary-600" />
+                    Drinkware
+                  </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                     {productCategories.drinkware.map((type) => (
                       <label key={type} className="flex items-center space-x-2 cursor-pointer">
@@ -969,19 +909,10 @@ export default function JoinPage() {
 
                 {/* Home Decor Section */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                      <Image className="w-4 h-4 text-primary-600" />
-                      Home Decor
-                    </h4>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectAll('homeDecor')}
-                      className="text-xs px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors"
-                    >
-                      Select All
-                    </button>
-                  </div>
+                  <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                    <Image className="w-4 h-4 text-primary-600" />
+                    Home Decor
+                  </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {productCategories.homeDecor.map((type) => (
                       <label key={type} className="flex items-center space-x-2 cursor-pointer">

@@ -28,23 +28,6 @@ export default function CTA() {
             or a local print shop, there's a place for you in our growing network.
           </p>
 
-          {/* Support Development Section */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8 max-w-2xl mx-auto border border-white/20">
-            <h3 className="text-xl font-semibold text-white mb-3">
-              Support Our Development
-            </h3>
-            <p className="text-primary-100 mb-4 text-sm">
-              Help us build the platform that connects local print shops with online stores. 
-              Your contribution funds development and helps create a more sustainable printing ecosystem.
-            </p>
-            <button 
-              onClick={() => window.location.href = '/auth/signup'}
-              className="bg-accent-500 hover:bg-accent-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
-            >
-              Support DIY Label
-            </button>
-          </div>
-
           {/* Two simple buttons for joining */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 max-w-md mx-auto">
            <button 
