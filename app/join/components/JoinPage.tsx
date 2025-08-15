@@ -1066,18 +1066,18 @@ export default function JoinPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
               <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">No Setup Fees</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Join our network at no cost and start receiving orders immediately</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Steady Orders</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Consistent daily orders from local customers</p>
             </div>
             <div>
               <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Quality Guaranteed</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">We maintain high standards and provide support to ensure customer satisfaction</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">No Marketing Costs</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">We bring customers to you - zero acquisition cost</p>
             </div>
             <div>
               <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Local Focus</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Orders are routed to the closest print shop for faster delivery</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Scale Your Business</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Grow beyond walk-in customers with online orders</p>
             </div>
           </div>
         </div>
