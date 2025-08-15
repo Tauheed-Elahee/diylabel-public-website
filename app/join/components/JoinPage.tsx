@@ -1076,8 +1076,8 @@ export default function JoinPage() {
             </div>
             <div>
               <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Customer Reviews</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Customer feedback directly impacts order routing - higher-rated shops receive more orders, just like Skip the Dishes</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Customer Connection</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Create a direct connection between customer and print shop for repeatable business</p>
             </div>
             <div>
               <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
