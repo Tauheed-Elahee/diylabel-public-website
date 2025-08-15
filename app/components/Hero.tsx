@@ -299,16 +299,16 @@ export default function Hero() {
       {/* Content */}
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 text-center">
         <div className="animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white mb-8 leading-tight">
             Your Merch,
             <br />
-            <span className="text-accent-300">
+            <span className="text-accent-500 dark:text-accent-300">
               Made in {userCity}
             </span>
           </h1>
           
           {/* Interactive Map Container */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto border border-white/20">
+          <div className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto border border-black/20 dark:border-white/20">
             {/* Map Container */}
             <div className="relative h-64 md:h-80">
               <div ref={mapContainer} className="w-full h-full" />
@@ -317,11 +317,11 @@ export default function Hero() {
               {(mapLoading || shopsLoading) && !mapError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                   <div className="text-center p-6">
-                    <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3 animate-pulse" />
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <MapPin className="w-12 h-12 text-accent-500 dark:text-accent-300 mx-auto mb-3 animate-pulse" />
+                    <h3 className="text-lg font-semibold text-black dark:text-white mb-2">
                       Loading Interactive Map
                     </h3>
-                    <p className="text-gray-200 text-sm">
+                    <p className="text-gray-600 dark:text-gray-200 text-sm">
                       Discovering print shops near you...
                     </p>
                   </div>
@@ -332,14 +332,14 @@ export default function Hero() {
               {mapError && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                   <div className="text-center p-6">
-                    <MapPin className="w-12 h-12 text-accent-300 mx-auto mb-3" />
-                    <h3 className="text-lg font-semibold text-white mb-2">
+                    <MapPin className="w-12 h-12 text-accent-500 dark:text-accent-300 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-black dark:text-white mb-2">
                       Map Preview
                     </h3>
-                    <p className="text-gray-200 text-sm mb-2">
+                    <p className="text-gray-600 dark:text-gray-200 text-sm mb-2">
                       Interactive map requires setup
                     </p>
-                    <p className="text-gray-300 text-xs">
+                    <p className="text-gray-500 dark:text-gray-300 text-xs">
                       Print shops available below
                     </p>
                   </div>
@@ -348,10 +348,10 @@ export default function Hero() {
 
               {/* Print Shop Stats Overlay - Only show if not in error state */}
               {!mapError && (
-                <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                  <div className="text-sm font-medium text-white mb-1">Print Shops Found</div>
-                  <div className="text-2xl font-bold text-accent-300 mb-1">{heroShops.length}</div>
-                  <div className="text-xs text-gray-300">Within 50km of {userCity}</div>
+                <div className="absolute top-4 left-4 bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-black/20 dark:border-white/20">
+                  <div className="text-sm font-medium text-black dark:text-white mb-1">Print Shops Found</div>
+                  <div className="text-2xl font-bold text-accent-500 dark:text-accent-300 mb-1">{heroShops.length}</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-300">Within 50km of {userCity}</div>
                 </div>
               )}
             </div>
@@ -363,7 +363,7 @@ export default function Hero() {
                   {heroShops.map((shop) => (
                     <div 
                       key={shop.id}
-                      className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
+                      className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-black/20 dark:border-white/20 hover:bg-black/20 dark:hover:bg-white/20 transition-all cursor-pointer"
                       onClick={() => {
                         setSelectedShop(selectedShop?.id === shop.id ? null : shop)
                         if (map.current && !mapError && hasValidMapboxToken) {
@@ -380,12 +380,12 @@ export default function Hero() {
                       }}
                     >
                       <div className="flex items-start space-x-2">
-                        <MapPin className="w-4 h-4 text-accent-300 mt-1 flex-shrink-0" />
+                        <MapPin className="w-4 h-4 text-accent-500 dark:text-accent-300 mt-1 flex-shrink-0" />
                         <div>
-                          <h4 className="font-medium text-white text-sm">
+                          <h4 className="font-medium text-black dark:text-white text-sm">
                             {shop.name}
                           </h4>
-                          <p className="text-xs text-gray-300 mt-1">
+                          <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                             {shop.specialty}
                           </p>
                           <div className="flex items-center text-yellow-400 mt-1">
@@ -399,11 +399,11 @@ export default function Hero() {
                 </div>
               ) : (
                 <div className="text-center py-6">
-                  <MapPin className="w-8 h-8 text-accent-300 mx-auto mb-2" />
-                  <p className="text-white text-sm mb-1">
+                  <MapPin className="w-8 h-8 text-accent-500 dark:text-accent-300 mx-auto mb-2" />
+                  <p className="text-black dark:text-white text-sm mb-1">
                     {shopsLoading ? 'Loading print shops...' : 'No print shops within 50km'}
                   </p>
-                  <p className="text-gray-300 text-xs">
+                  <p className="text-gray-600 dark:text-gray-300 text-xs">
                     {shopsLoading ? 'Please wait...' : 'Expanding search radius...'}
                   </p>
                 </div>
@@ -422,7 +422,7 @@ export default function Hero() {
             
             <button 
               onClick={scrollToFeatures}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm"
+              className="bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-black dark:text-white border border-black/30 dark:border-white/30 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 backdrop-blur-sm"
             >
               Learn More
             </button>
@@ -432,8 +432,8 @@ export default function Hero() {
 
       {/* Scroll indicator - moved further down with more spacing */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-bounce-gentle"></div>
+        <div className="w-6 h-10 border-2 border-black/50 dark:border-white/50 rounded-full flex justify-center">
+          <div className="w-1 h-3 bg-black/70 dark:bg-white/70 rounded-full mt-2 animate-bounce-gentle"></div>
         </div>
       </div>
     </section>
