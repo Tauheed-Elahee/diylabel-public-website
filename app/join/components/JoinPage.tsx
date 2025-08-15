@@ -515,8 +515,8 @@ export default function JoinPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-lg">
               <DollarSign className="w-12 h-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Increase Revenue</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Average 40% revenue increase in first 6 months</p>
+             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Additional Revenue Stream</h3>
+             <p className="text-gray-600 dark:text-gray-300 text-sm">Tap into new income opportunities with on-demand printing orders</p>
             </div>
             <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-lg">
               <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
