@@ -512,7 +512,7 @@ export default function JoinPage() {
           </div>
 
           {/* Key Benefits Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
             <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-lg">
               <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Steady Orders</h3>
