@@ -1065,17 +1065,17 @@ export default function JoinPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Steady Orders</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Consistent daily orders from local customers</p>
             </div>
             <div>
-              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <Users className="w-12 h-12 text-purple-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">No Marketing Costs</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">We bring customers to you - zero acquisition cost</p>
             </div>
             <div>
-              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <TrendingUp className="w-12 h-12 text-orange-500 mx-auto mb-4" />
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Scale Your Business</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Grow beyond walk-in customers with online orders</p>
             </div>
