@@ -10,7 +10,7 @@ import { usePrintShops } from '../hooks/usePrintShops'
 
 // Set Mapbox access token with validation
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
-if (mapboxToken && mapboxToken !== '') {
+if (mapboxToken && mapboxToken !== '' && mapboxToken.startsWith('pk.')) {
   mapboxgl.accessToken = mapboxToken
 }
 
@@ -176,11 +176,14 @@ export default function Hero() {
   // Initialize map
   useEffect(() => {
     // Early return if map already exists, container not ready, or no valid token
-    if (map.current || !mapContainer.current || !hasValidMapboxToken) {
-      if (!hasValidMapboxToken) {
-        setMapError(true)
-        setMapLoading(false)
-      }
+    if (map.current || !mapContainer.current) {
+      return
+    }
+
+    // If no valid token, show error state and don't initialize map
+    if (!hasValidMapboxToken) {
+      setMapError(true)
+      setMapLoading(false)
       return
     }
 
