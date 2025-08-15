@@ -512,7 +512,12 @@ export default function JoinPage() {
           </div>
 
           {/* Key Benefits Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-lg">
+              <DollarSign className="w-12 h-12 text-green-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Increase Revenue</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">Average 40% revenue increase in first 6 months</p>
+            </div>
             <div className="bg-white dark:bg-gray-700 rounded-lg p-6 text-center shadow-lg">
               <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Steady Orders</h3>
@@ -1052,7 +1057,7 @@ export default function JoinPage() {
                   )}
                 </button>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                  Let customers come to you - with orders already in hand
+                  We'll contact you within 24 hours to discuss partnership opportunities
                 </p>
               </div>
             </form>
@@ -1061,24 +1066,23 @@ export default function JoinPage() {
       </section>
 
       {/* Trust Indicators */}
-      {/* Key Benefits Grid */}
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Steady Orders</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Consistent daily orders from local customers</p>
+              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">No Setup Fees</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Join our network at no cost and start receiving orders immediately</p>
             </div>
             <div>
-              <Users className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">No Marketing Costs</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">We bring customers to you - zero acquisition cost</p>
+              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Quality Guaranteed</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">We maintain high standards and provide support to ensure customer satisfaction</p>
             </div>
             <div>
-              <TrendingUp className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Scale Your Business</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Grow beyond walk-in customers with online orders</p>
+              <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-3" />
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Local Focus</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Orders are routed to the closest print shop for faster delivery</p>
             </div>
           </div>
         </div>
