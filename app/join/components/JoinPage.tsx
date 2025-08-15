@@ -1057,7 +1057,7 @@ export default function JoinPage() {
                   )}
                 </button>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                  We'll contact you within 24 hours to discuss partnership opportunities
+                  Let customers come to you - with orders already in hand
                 </p>
               </div>
             </form>
