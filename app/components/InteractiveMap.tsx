@@ -10,17 +10,11 @@ import { calculateDistance } from '../utils/distance'
 import { extractCityFromAddress } from '../utils/searchUtils'
 import { usePrintShops } from '../hooks/usePrintShops'
 import { type UserLocation } from '../../lib/geolocation'
-import { type UserLocation } from '../../lib/geolocation'
 
 // Set Mapbox access token with validation
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
 if (mapboxToken && mapboxToken !== '' && mapboxToken.startsWith('pk.')) {
   mapboxgl.accessToken = mapboxToken
-}
-
-interface InteractiveMapProps {
-  initialUserLocation?: UserLocation
-  initialPrintShops?: PrintShop[]
 }
 
 interface InteractiveMapProps {
@@ -45,12 +39,6 @@ export default function InteractiveMap({ initialUserLocation, initialPrintShops 
     } : null
   )
   const [userCity, setUserCity] = useState<string>(initialUserLocation?.city || 'Ottawa, ON, Canada')
-      lat: initialUserLocation.lat,
-      lng: initialUserLocation.lng,
-      source: initialUserLocation.source
-    } : null
-  )
-  const [userCity, setUserCity] = useState<string>(initialUserLocation?.city || 'Ottawa, ON, Canada')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'name'>('distance')
@@ -63,7 +51,6 @@ export default function InteractiveMap({ initialUserLocation, initialPrintShops 
     userLocation,
     sortBy,
     radiusKm: 50,
-    initialData: initialPrintShops
     initialData: initialPrintShops
   })
 
@@ -97,11 +84,6 @@ export default function InteractiveMap({ initialUserLocation, initialPrintShops 
 
   // Get user's location
   useEffect(() => {
-    // Skip geolocation if we already have server-provided location
-    if (initialUserLocation) {
-      return
-    }
-
     // Skip geolocation if we already have server-provided location
     if (initialUserLocation) {
       return
@@ -485,11 +467,6 @@ export default function InteractiveMap({ initialUserLocation, initialPrintShops 
                 </div>
                 <div className="text-xs text-primary-600 dark:text-primary-400">
                   Near {userCity}
-                  {userLocation?.source === 'netlify-ip' && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      📍 Auto-detected location
-                    </div>
-                  )}
                   {userLocation?.source === 'netlify-ip' && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       📍 Auto-detected location
