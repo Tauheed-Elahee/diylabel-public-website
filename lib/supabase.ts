@@ -20,6 +20,7 @@ export interface PrintShop {
   rating: number
   created_at?: string
   updated_at?: string
+  distance_km?: number
 }
 
 // Print shop service functions
