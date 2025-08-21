@@ -34,11 +34,6 @@ export default function InteractiveMap({ initialUserLocation, initialPrintShops 
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number, source?: string} | null>(
     initialUserLocation ? {
       lat: initialUserLocation.lat,
-      lng: initialUserLocation.lng,
-      source: initialUserLocation.source
-    } : null
-  )
-  const [userCity, setUserCity] = useState<string>(initialUserLocation?.city || 'Ottawa, ON, Canada')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'name'>('distance')
