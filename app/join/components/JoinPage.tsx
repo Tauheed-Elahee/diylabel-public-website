@@ -495,8 +495,8 @@ export default function JoinPage() {
                     <Play className="w-16 h-16 text-white ml-2" />
                   </button>
                   <div className="absolute bottom-6 left-6 text-white">
-                    <h3 className="text-xl font-bold mb-2">DIY Label Platform Demo</h3>
-                    <p className="text-sm opacity-90">4:12 • See how our platform connects stores with local print shops</p>
+                    <h3 className="text-xl font-bold mb-2">DIY Label Demo</h3>
+                    <p className="text-sm opacity-90">4:12 • See how we connect your neighbours to you</p>
                   </div>
                 </div>
               ) : (
