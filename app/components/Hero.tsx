@@ -7,6 +7,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { type PrintShop } from '../../lib/supabase'
 import { usePrintShops } from '../hooks/usePrintShops'
+import { type UserLocation } from '../../lib/geolocation'
 
 // Set Mapbox access token with validation
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -14,13 +15,24 @@ if (mapboxToken && mapboxToken !== '' && mapboxToken.startsWith('pk.')) {
   mapboxgl.accessToken = mapboxToken
 }
 
-export default function Hero() {
+interface HeroProps {
+  initialUserLocation?: UserLocation
+  initialPrintShops?: PrintShop[]
+}
+
+export default function Hero({ initialUserLocation, initialPrintShops = [] }: HeroProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
-  const [userCity, setUserCity] = useState<string>('Ottawa')
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
+  const [userCity, setUserCity] = useState<string>(initialUserLocation?.city || 'Ottawa')
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number, source?: string} | null>(
+    initialUserLocation ? {
+      lat: initialUserLocation.lat,
+      lng: initialUserLocation.lng,
+      source: initialUserLocation.source
+    } : null
+  )
   const [mapLoading, setMapLoading] = useState(true)
   const [mapError, setMapError] = useState(false)
   const { resolvedTheme } = useTheme()
@@ -32,7 +44,8 @@ export default function Hero() {
   // Use the custom hook to fetch nearby print shops from Supabase
   const { printShops: nearbyShops, loading: shopsLoading } = usePrintShops({
     userLocation,
-    radiusKm: 50
+    radiusKm: 50,
+    initialData: initialPrintShops
   })
 
   // Limit to 3 shops for hero display
@@ -91,12 +104,17 @@ export default function Hero() {
 
   // Get user's location and city
   useEffect(() => {
+    // Skip geolocation if we already have server-provided location
+    if (initialUserLocation) {
+      return
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const userLat = position.coords.latitude
           const userLng = position.coords.longitude
-          setUserLocation({ lat: userLat, lng: userLng })
+          setUserLocation({ lat: userLat, lng: userLng, source: 'browser-gps' })
           
           // Get city name from coordinates
           const cityName = await getCityFromCoordinates(userLat, userLng)
@@ -112,7 +130,7 @@ export default function Hero() {
       // Geolocation not supported, use default location
       setUserCity('Ottawa')
     }
-  }, [])
+  }, [initialUserLocation])
 
   // Create custom marker element
   const createMarkerElement = (shop: PrintShop) => {
@@ -308,6 +326,11 @@ export default function Hero() {
             <span className="text-accent-500 dark:text-accent-300">
               Made in {userCity}
             </span>
+            {userLocation?.source === 'netlify-ip' && (
+              <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                📍 Location detected automatically
+              </div>
+            )}
           </h1>
           
           {/* Interactive Map Container */}

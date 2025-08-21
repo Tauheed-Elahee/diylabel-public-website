@@ -9,6 +9,7 @@ import { type PrintShop } from '../../lib/supabase'
 import { calculateDistance } from '../utils/distance'
 import { extractCityFromAddress } from '../utils/searchUtils'
 import { usePrintShops } from '../hooks/usePrintShops'
+import { type UserLocation } from '../../lib/geolocation'
 
 // Set Mapbox access token with validation
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ''
@@ -16,17 +17,28 @@ if (mapboxToken && mapboxToken !== '' && mapboxToken.startsWith('pk.')) {
   mapboxgl.accessToken = mapboxToken
 }
 
-export default function InteractiveMap() {
+interface InteractiveMapProps {
+  initialUserLocation?: UserLocation
+  initialPrintShops?: PrintShop[]
+}
+
+export default function InteractiveMap({ initialUserLocation, initialPrintShops = [] }: InteractiveMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
-  const [lng, setLng] = useState(-75.6972)
-  const [lat, setLat] = useState(45.4215)
+  const [lng, setLng] = useState(initialUserLocation?.lng || -75.6972)
+  const [lat, setLat] = useState(initialUserLocation?.lat || 45.4215)
   const [zoom, setZoom] = useState(11)
   const [mapLoading, setMapLoading] = useState(true)
   const [mapError, setMapError] = useState(false)
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
-  const [userCity, setUserCity] = useState<string>('Ottawa, ON, Canada')
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number, source?: string} | null>(
+    initialUserLocation ? {
+      lat: initialUserLocation.lat,
+      lng: initialUserLocation.lng,
+      source: initialUserLocation.source
+    } : null
+  )
+  const [userCity, setUserCity] = useState<string>(initialUserLocation?.city || 'Ottawa, ON, Canada')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'name'>('distance')
@@ -38,7 +50,8 @@ export default function InteractiveMap() {
     searchTerm,
     userLocation,
     sortBy,
-    radiusKm: 50
+    radiusKm: 50,
+    initialData: initialPrintShops
   })
 
   // Check if Mapbox token is available and valid
@@ -71,6 +84,11 @@ export default function InteractiveMap() {
 
   // Get user's location
   useEffect(() => {
+    // Skip geolocation if we already have server-provided location
+    if (initialUserLocation) {
+      return
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -78,7 +96,7 @@ export default function InteractiveMap() {
           const userLng = position.coords.longitude
           setLat(userLat)
           setLng(userLng)
-          setUserLocation({ lat: userLat, lng: userLng })
+          setUserLocation({ lat: userLat, lng: userLng, source: 'browser-gps' })
           
           // Get city name from coordinates
           const cityName = await getCityFromCoordinates(userLat, userLng)
@@ -91,7 +109,7 @@ export default function InteractiveMap() {
         }
       )
     }
-  }, [])
+  }, [initialUserLocation])
 
   // Create custom marker element
   const createMarkerElement = (shop: PrintShop) => {
@@ -449,6 +467,11 @@ export default function InteractiveMap() {
                 </div>
                 <div className="text-xs text-primary-600 dark:text-primary-400">
                   Near {userCity}
+                  {userLocation?.source === 'netlify-ip' && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      📍 Auto-detected location
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -532,6 +555,9 @@ export default function InteractiveMap() {
                           {distance && (
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                               {distance.toFixed(1)} km away
+                              {userLocation?.source === 'netlify-ip' && (
+                                <span className="ml-1 text-gray-400">~</span>
+                              )}
                             </p>
                           )}
                         </div>

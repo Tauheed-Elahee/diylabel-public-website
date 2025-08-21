@@ -10,17 +10,30 @@ interface UsePrintShopsOptions {
   userLocation?: { lat: number; lng: number } | null
   sortBy?: 'distance' | 'rating' | 'name'
   radiusKm?: number
+  initialData?: PrintShop[]
 }
 
 export function usePrintShops(options: UsePrintShopsOptions = {}) {
-  const { searchTerm = '', userLocation, sortBy = 'distance', radiusKm = 50 } = options
+  const { searchTerm = '', userLocation, sortBy = 'distance', radiusKm = 50, initialData = [] } = options
   
-  const [printShops, setPrintShops] = useState<PrintShop[]>([])
-  const [loading, setLoading] = useState(true)
+  const [printShops, setPrintShops] = useState<PrintShop[]>(initialData)
+  const [loading, setLoading] = useState(initialData.length === 0)
   const [error, setError] = useState<string | null>(null)
 
   // Fetch print shops from Supabase
   useEffect(() => {
+    // If we have initial data and no search term, don't fetch immediately
+    if (initialData.length > 0 && !searchTerm.trim() && userLocation) {
+      // Check if the user location matches the initial data location
+      // If it's the same location (within 1km), use initial data
+      const initialLat = userLocation.lat
+      const initialLng = userLocation.lng
+      
+      // For now, assume initial data is valid and skip fetch
+      setLoading(false)
+      return
+    }
+
     async function fetchPrintShops() {
       try {
         setLoading(true)
@@ -49,7 +62,7 @@ export function usePrintShops(options: UsePrintShopsOptions = {}) {
     }
 
     fetchPrintShops()
-  }, [searchTerm, userLocation?.lat, userLocation?.lng, radiusKm])
+  }, [searchTerm, userLocation?.lat, userLocation?.lng, radiusKm, initialData.length])
 
   // Client-side filtering and sorting
   const processedShops = React.useMemo(() => {
