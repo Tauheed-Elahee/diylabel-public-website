@@ -114,6 +114,7 @@ export default function Hero() {
       // Geolocation not supported, use default location
       setUserCity('Ottawa')
     }
+  }, [])
 
   // Create custom marker element
   const createMarkerElement = (shop: PrintShop) => {
