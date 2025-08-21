@@ -11,6 +11,7 @@ interface UsePrintShopsOptions {
   sortBy?: 'distance' | 'rating' | 'name'
   radiusKm?: number
   initialData?: PrintShop[]
+  initialData?: PrintShop[]
 }
 
 export function usePrintShops(options: UsePrintShopsOptions = {}) {
@@ -22,6 +23,18 @@ export function usePrintShops(options: UsePrintShopsOptions = {}) {
 
   // Fetch print shops from Supabase
   useEffect(() => {
+    // If we have initial data and no search term, don't fetch immediately
+    if (initialData.length > 0 && !searchTerm.trim() && userLocation) {
+      // Check if the user location matches the initial data location
+      // If it's the same location (within 1km), use initial data
+      const initialLat = userLocation.lat
+      const initialLng = userLocation.lng
+      
+      // For now, assume initial data is valid and skip fetch
+      setLoading(false)
+      return
+    }
+
     // If we have initial data and no search term, don't fetch immediately
     if (initialData.length > 0 && !searchTerm.trim() && userLocation) {
       // Check if the user location matches the initial data location
