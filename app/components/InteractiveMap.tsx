@@ -31,16 +31,9 @@ export default function InteractiveMap({ initialUserLocation, initialPrintShops 
   const [zoom, setZoom] = useState(11)
   const [mapLoading, setMapLoading] = useState(true)
   const [mapError, setMapError] = useState(false)
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number, source?: string} | null>(
-    initialUserLocation ? {
-      lat: initialUserLocation.lat,
-      lng: initialUserLocation.lng,
-      source: initialUserLocation.source
-    } : null
-  )
   const [userCity, setUserCity] = useState('Ottawa, ON, Canada')
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number, source?: string} | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
   const [sortBy, setSortBy] = useState<'distance' | 'rating' | 'name'>('distance')
   const [showAllShops, setShowAllShops] = useState(false)
   const { resolvedTheme } = useTheme()

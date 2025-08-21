@@ -15,24 +15,13 @@ if (mapboxToken && mapboxToken !== '' && mapboxToken.startsWith('pk.')) {
   mapboxgl.accessToken = mapboxToken
 }
 
-interface HeroProps {
-  initialUserLocation?: UserLocation
-  initialPrintShops?: PrintShop[]
-}
-
-export default function Hero({ initialUserLocation, initialPrintShops = [] }: HeroProps) {
+export default function Hero() {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
   const [selectedShop, setSelectedShop] = useState<PrintShop | null>(null)
-  const [userCity, setUserCity] = useState<string>(initialUserLocation?.city || 'Ottawa')
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number, source?: string} | null>(
-    initialUserLocation ? {
-      lat: initialUserLocation.lat,
-      lng: initialUserLocation.lng,
-      source: initialUserLocation.source
-    } : null
-  )
+  const [userCity, setUserCity] = useState<string>('Ottawa')
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number, source?: string} | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
   const [mapError, setMapError] = useState(false)
   const { resolvedTheme } = useTheme()
@@ -45,7 +34,7 @@ export default function Hero({ initialUserLocation, initialPrintShops = [] }: He
   const { printShops: nearbyShops, loading: shopsLoading } = usePrintShops({
     userLocation,
     radiusKm: 50,
-    initialData: initialPrintShops
+    initialData: []
   })
 
   // Limit to 3 shops for hero display
@@ -104,11 +93,6 @@ export default function Hero({ initialUserLocation, initialPrintShops = [] }: He
 
   // Get user's location and city
   useEffect(() => {
-    // Skip geolocation if we already have server-provided location
-    if (initialUserLocation) {
-      return
-    }
-
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -130,7 +114,6 @@ export default function Hero({ initialUserLocation, initialPrintShops = [] }: He
       // Geolocation not supported, use default location
       setUserCity('Ottawa')
     }
-  }, [initialUserLocation])
 
   // Create custom marker element
   const createMarkerElement = (shop: PrintShop) => {
