@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { getUserLocationFromHeaders } from '../../lib/geolocation'
 import { printShopService } from '../../lib/supabase'
+import { type PrintShop } from '../../lib/supabase'
 
 export const metadata = {
   title: 'Debug - DIY Label',
@@ -19,8 +20,8 @@ export default async function DebugPage() {
   })
   
   // Fetch nearby print shops
-  let nearbyShops = []
-  let shopsError = null
+  let nearbyShops: PrintShop[] = []
+  let shopsError: string | null = null
   try {
     nearbyShops = await printShopService.getNearby(
       userLocation.lat, 

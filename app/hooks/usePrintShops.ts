@@ -11,7 +11,6 @@ interface UsePrintShopsOptions {
   sortBy?: 'distance' | 'rating' | 'name'
   radiusKm?: number
   initialData?: PrintShop[]
-  initialData?: PrintShop[]
 }
 
 export function usePrintShops(options: UsePrintShopsOptions = {}) {
