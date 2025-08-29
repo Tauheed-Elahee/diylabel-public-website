@@ -486,28 +486,14 @@ export default function JoinPage() {
           {/* Video Container */}
           <div className="relative max-w-4xl mx-auto mb-12">
             <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl aspect-video">
-              {!isVideoPlaying ? (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-600 to-primary-800">
-                  <button
-                    onClick={() => setIsVideoPlaying(true)}
-                    className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-6 transition-all duration-300 transform hover:scale-110"
-                  >
-                    <Play className="w-16 h-16 text-white ml-2" />
-                  </button>
-                  <div className="absolute bottom-6 left-6 text-white">
-                    <h3 className="text-xl font-bold mb-2">DIY Label Demo</h3>
-                    <p className="text-sm opacity-90">4:12 • See how we connect your neighbours to you</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                  <div className="text-center text-white">
-                    <Play className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Video player would be embedded here</p>
-                    <p className="text-sm text-gray-300 mt-2">Integration with your video hosting platform</p>
-                  </div>
-                </div>
-              )}
+              <iframe
+                src="https://www.youtube.com/embed/ADiRbEvzOyg"
+                title="DIY Label Platform Demo"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="w-full h-full"
+              />
             </div>
           </div>
 
