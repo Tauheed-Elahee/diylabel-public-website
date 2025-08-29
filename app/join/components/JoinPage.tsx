@@ -487,10 +487,11 @@ export default function JoinPage() {
           <div className="relative max-w-4xl mx-auto mb-12">
             <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl aspect-video">
               <iframe
-                src="https://www.youtube.com/embed/ADiRbEvzOyg"
+               src="https://www.youtube.com/embed/ADiRbEvzOyg?si=yKZ7w1-s0U2Wi8tp"
                 title="DIY Label Platform Demo"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+               referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
                 className="w-full h-full"
               />
