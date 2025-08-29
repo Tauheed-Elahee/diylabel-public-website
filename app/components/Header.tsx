@@ -24,7 +24,7 @@ export default function Header() {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                DIY Label
+                <a href="/#features">DIY Label</a>
               </h1>
             </div>
           </div>
